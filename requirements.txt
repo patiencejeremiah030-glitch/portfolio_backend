@@ -1,0 +1,8 @@
+django
+djangorestframework
+psycopg[binary]
+pillow
+dj-database-url
+python-dotenv
+django-cors-headers
+groq
