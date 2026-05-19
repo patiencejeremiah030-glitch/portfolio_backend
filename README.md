@@ -9,32 +9,6 @@ Personal portfolio with a **Django REST API** backend and a **React (Vite)** fro
 | **Backend** | Django, Django REST Framework, SQLite (local) / PostgreSQL (production), Groq, django-cors-headers |
 | **Frontend** | React, Vite, Chakra UI, Framer Motion, React Router, Axios |
 
-## Project structure
-
-```
-portfolio-Backend/
-├── config/              # Django settings & URLs
-├── core/                # Site profile (about)
-├── backend/             # Skills, experience, education, projects
-├── blog/                # Blog posts
-├── contact/             # Contact form submissions
-├── chatbot/             # AI chat (Groq)
-├── frontend/            # React app (Vite)
-├── manage.py
-├── requirements.txt
-├── .env.example         # Backend environment template
-└── frontend/.env.example
-```
-
-## Prerequisites
-
-- **Python 3.11+**
-- **Node.js 18+** and npm
-- **Groq API key** (for AI chat)
-- **PostgreSQL** (optional locally; set `USE_POSTGRES=true` in `.env`)
-
----
-
 ## Backend setup
 
 1. Clone the repo and open the project folder:
