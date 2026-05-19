@@ -13,7 +13,7 @@ Personal portfolio with a **Django REST API** backend and a **React (Vite)** fro
 
 1. Clone the repo and open the project folder:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   git clone https://patiencejeremiah030-glitch/portfolio_backend
    cd portfolio-Backend
    ```
 
