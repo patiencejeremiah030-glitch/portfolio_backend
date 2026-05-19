@@ -5,7 +5,7 @@ from .models import Skil, Experience, Education, Project
 @admin.register(Skil)
 class SkilAdmin(admin.ModelAdmin):
     list_display = ("name", "category", "proficiency", "order")
-    search_fields = ("name", "category" "proficiency")
+    search_fields = ("name", "category", "proficiency")
     ordering = ("order",)
 
 @admin.register(Experience)

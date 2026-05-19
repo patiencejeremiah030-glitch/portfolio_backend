@@ -7,14 +7,7 @@ from rest_framework.permissions import AllowAny
 from groq import Groq
 
 from .serializers import ChatRequestSerializer
-
-
-SYSTEM_PROMPT = (
-    "You are a friendly portfolio assistant. "
-    "Answer questions about the developer's projects, skills, "
-    "experience, education, and how to contact them. "
-    "Keep replies short, clear, and polite."
-)
+from .context import build_portfolio_context
 
 
 class ChatView(APIView):
@@ -27,16 +20,25 @@ class ChatView(APIView):
 
         user_message = serializer.validated_data["message"]
 
-        client = Groq(api_key=settings.GROQ_API_KEY)
+        api_key = (settings.GROQ_API_KEY or "").strip()
+        if not api_key:
+            return Response(
+                {"error": "GROQ_API_KEY is missing. Add it to .env and restart Django."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+
+        system_prompt = build_portfolio_context()
+
+        client = Groq(api_key=api_key)
 
         try:
             completion = client.chat.completions.create(
                 model="llama-3.1-8b-instant",
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message},
                 ],
-                temperature=0.5,
+                temperature=0.3,
                 max_tokens=512,
             )
             reply = completion.choices[0].message.content

@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import(
+from .views import (
     SkilListAPIView,
     ExperienceListAPIView,
     EducationListAPIView,
     ProjectListAPIView,
+    ProjectDetailAPIView,
 )
 
 urlpatterns = [
@@ -11,5 +12,5 @@ urlpatterns = [
     path("experiences/", ExperienceListAPIView.as_view(), name="experience"),
     path("educations/", EducationListAPIView.as_view(), name="education"),
     path("projects/", ProjectListAPIView.as_view(), name="project"),
-    path("projects/<slug:slug>/", ProjectListAPIView.as_view(), name="project-detail"),
+    path("projects/<slug:slug>/", ProjectDetailAPIView.as_view(), name="project-detail"),
 ]

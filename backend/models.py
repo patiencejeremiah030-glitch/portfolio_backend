@@ -21,7 +21,7 @@ class Experience(models.Model):
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.role} - {self.company}"
+        return f"{self.role} - {self.company_name}"
 
 class Education(models.Model):
     school_name = models.CharField(max_length=150)
@@ -33,7 +33,7 @@ class Education(models.Model):
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f"{self.degree} - {self.school}"
+        return f"{self.degree} - {self.school_name}"
 
 class Project(models.Model):
     title = models.CharField(max_length=200)
