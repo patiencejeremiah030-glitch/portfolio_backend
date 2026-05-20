@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import SiteProfile
+from .portfolio_seed import seed_initial_portfolio_if_empty
 from .serializers import SiteProfileSerializer
 
 
@@ -25,7 +26,7 @@ class SiteProfileView(RetrieveUpdateAPIView):
     permission_classes = [AllowAny]
 
     def get_object(self):
-        profile = SiteProfile.objects.order_by("-updated_at").first()
+        profile = seed_initial_portfolio_if_empty()
         if profile is None:
             from rest_framework.exceptions import NotFound
             raise NotFound("No site profile configured. Add one in Django admin.")

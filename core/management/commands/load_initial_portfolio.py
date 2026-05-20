@@ -1,7 +1,7 @@
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 
 from core.models import SiteProfile
+from core.portfolio_seed import seed_initial_portfolio_if_empty
 
 
 class Command(BaseCommand):
@@ -19,9 +19,16 @@ class Command(BaseCommand):
             )
             return
 
-        call_command("loaddata", "initial_portfolio", verbosity=options["verbosity"])
-        self.stdout.write(
-            self.style.SUCCESS(
-                "Loaded initial portfolio data (profile, skills, projects, blog)."
+        profile = seed_initial_portfolio_if_empty()
+        if profile:
+            self.stdout.write(
+                self.style.SUCCESS(
+                    "Loaded initial portfolio data (profile, skills, projects, blog)."
+                )
             )
-        )
+        else:
+            self.stdout.write(
+                self.style.ERROR(
+                    "Could not load initial portfolio data. Check fixture file."
+                )
+            )
