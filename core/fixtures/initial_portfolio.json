@@ -1,0 +1,114 @@
+[
+  {
+    "model": "core.siteprofile",
+    "pk": 1,
+    "fields": {
+      "full_name": "Jeremiah patience Audrey",
+      "headline": "Hello, I'm  Audrey",
+      "bio": "Full-Stack Software Engineer specializing in building scalable web applications using Django and React. Experienced in designing and deploying cloud-based solutions on AWS, including pipelines. Passionate about clean code, system architecture, and delivering impactful digital products.",
+      "email": "patiencejeremiah030@gmail.com",
+      "phone": "1238133967945",
+      "location": "lagos, nigeria",
+      "github_url": "https://github.com/patiencejeremiah030-glitch",
+      "linkedin_url": "https://www.linkedin.com/in/patience-jeremiah-92798b353",
+      "youtube_url": "https://www.youtube.com/@Audreypercy",
+      "twitter_url": "https://x.com/Audreypercy_/",
+      "instagram_url": "https://www.instagram.com/audreypercy_/",
+      "resume_url": "",
+      "avatar": null,
+      "created_at": "2026-05-18T23:16:03.853844Z",
+      "updated_at": "2026-05-19T12:12:34.916037Z"
+    }
+  },
+  {
+    "model": "backend.skil",
+    "pk": 1,
+    "fields": {
+      "name": "software engineer, AI prompt engineer",
+      "category": "full- stack",
+      "proficiency": 6,
+      "order": 0
+    }
+  },
+  {
+    "model": "backend.skil",
+    "pk": 2,
+    "fields": {
+      "name": "tech stack",
+      "category": "django, react, nodejs, mongodb, sql, AWS, S3, akure",
+      "proficiency": 6,
+      "order": 0
+    }
+  },
+  {
+    "model": "backend.experience",
+    "pk": 1,
+    "fields": {
+      "company_name": "Daskstudio",
+      "role": "fullstack developer",
+      "start_date": "2025-09-02",
+      "end_date": "2026-05-19",
+      "is_current": false,
+      "description": "full-stack engineer",
+      "order": 0
+    }
+  },
+  {
+    "model": "backend.experience",
+    "pk": 2,
+    "fields": {
+      "company_name": "programmify",
+      "role": "fullstack developer intern",
+      "start_date": "2023-02-05",
+      "end_date": "2024-05-06",
+      "is_current": false,
+      "description": "full-stack intern",
+      "order": 0
+    }
+  },
+  {
+    "model": "backend.education",
+    "pk": 1,
+    "fields": {
+      "school_name": "Estam University Benin Republic",
+      "degree": "BSC",
+      "field_of_study": "Computer Science",
+      "start_date": "2023-09-16",
+      "end_date": "2025-05-05",
+      "description": "sucess is mine .",
+      "order": 0
+    }
+  },
+  {
+    "model": "backend.project",
+    "pk": 1,
+    "fields": {
+      "title": "MATAConnect",
+      "slug": "mataconnect",
+      "summary": "mataconnect is the  platform where you can have acess to communities , connect and collaborate",
+      "description": "it's a website that help young or older women to connect .",
+      "tech_stack": "python , react",
+      "live_url": "",
+      "image": null,
+      "featured": false,
+      "published": true,
+      "created_at": "2026-05-18T23:03:45.371298Z",
+      "updated_at": "2026-05-19T11:30:01.775526Z"
+    }
+  },
+  {
+    "model": "blog.blogpost",
+    "pk": 1,
+    "fields": {
+      "title": "How Givit Is Helping Communities in Lagos",
+      "slug": "how-givit-is-helping-communities-in-lagos",
+      "excerpt": "Givit connects donors with people in need by allowing unused items to be shared instead of wasted.",
+      "content": "Givit is a community-driven platform designed to connect people who have unused items with those who truly need them. Every day, valuable items like clothes, books, and electronics are thrown away while many individuals struggle to access them.\r\n\r\nThrough Givit, users can upload items they no longer need and make them available for others to request. This helps reduce waste, support low-income families, and build a stronger sense of community.\r\n\r\nOur mission is simple: don’t waste it, give it.",
+      "cover_image": null,
+      "published": true,
+      "published_at": "2026-05-04 18:00:00",
+      "created_at": "2026-05-18T22:57:02.811264Z",
+      "updated_at": "2026-05-18T22:57:02.811298Z"
+    }
+  }
+]

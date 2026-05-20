@@ -167,6 +167,20 @@ VITE_API_URL=https://your-api-domain.onrender.com/api
 
 **Backend:** Add your live frontend URL to `CORS_ALLOWED_ORIGINS` in `config/settings.py` (or load from an environment variable).
 
+**First deploy on Render (empty database):** After `migrate`, load your starter content:
+
+```bash
+python manage.py load_initial_portfolio
+```
+
+Or add it to the Render **Build Command** (after migrate):
+
+```bash
+python manage.py migrate && python manage.py load_initial_portfolio && python manage.py collectstatic --noinput
+```
+
+Then open `https://your-api.onrender.com/admin/`, log in, and re-upload profile/project images if needed.
+
 **Media files** (profile/project images): configure persistent storage or object storage (e.g. S3) for production; local `media/` is not ideal on ephemeral hosts.
 
 ---
