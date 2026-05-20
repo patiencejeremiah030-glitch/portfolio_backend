@@ -29,8 +29,39 @@ SECRET_KEY = os.getenv(
 
 DEBUG = os.getenv("DEBUG", "True").lower() in ("1", "true", "yes")
 
+def _parse_hosts(value):
+    hosts = []
+    for part in value.split(","):
+        host = part.strip().strip('"').strip("'")
+        if not host:
+            continue
+        # Fix copy-paste: "ALLOWED_HOSTS=portfolio-api.onrender.com" as value
+        if host.upper().startswith("ALLOWED_HOSTS="):
+            host = host.split("=", 1)[1].strip()
+        for prefix in ("https://", "http://"):
+            if host.startswith(prefix):
+                host = host[len(prefix) :].split("/")[0]
+        if host:
+            hosts.append(host)
+    return hosts
+
+
 _allowed = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1")
-ALLOWED_HOSTS = [h.strip() for h in _allowed.split(",") if h.strip()]
+ALLOWED_HOSTS = _parse_hosts(_allowed)
+
+# Render injects the real public hostname at runtime
+_render_host = (os.getenv("RENDER_EXTERNAL_HOSTNAME") or "").strip()
+if _render_host and _render_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(_render_host)
+
+# Wildcard for any *.onrender.com service (safe on Render only)
+if _render_host or os.getenv("RENDER"):
+    for host in (".onrender.com",):
+        if host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(host)
+
+# Render sits behind a HTTPS proxy
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -167,7 +198,7 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         },
     }
 
@@ -182,5 +213,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 _default_cors = "http://localhost:5173,http://127.0.0.1:5173"
 _cors = os.getenv("CORS_ALLOWED_ORIGINS", _default_cors)
 CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors.split(",") if o.strip()]
+
+# Required for Django admin over HTTPS in production
+CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
+if _render_host:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{_render_host}")
 
 GROQ_API_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
