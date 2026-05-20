@@ -22,13 +22,15 @@ load_dotenv(BASE_DIR / '.env')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6yo17gune2cp%8p-64%_cm^qvpb69w*f_ml7!yr%9^e9l_l0lt'
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-dev-only-change-in-production",
+)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True").lower() in ("1", "true", "yes")
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+_allowed = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1")
+ALLOWED_HOSTS = [h.strip() for h in _allowed.split(",") if h.strip()]
 
 
 # Application definition
@@ -55,6 +57,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,10 +92,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Local dev uses SQLite unless USE_POSTGRES=true and PostgreSQL is running.
 
 _sqlite_path = BASE_DIR / "db.sqlite3"
-_use_postgres = os.getenv("USE_POSTGRES", "").lower() in ("1", "true", "yes")
 _database_url = os.getenv("DATABASE_URL")
+_use_postgres = os.getenv("USE_POSTGRES", "").lower() in ("1", "true", "yes")
 
-if _use_postgres and _database_url:
+if _database_url and (_use_postgres or "postgres" in _database_url.lower()):
     DATABASES = {
         "default": dj_database_url.config(
             default=_database_url,
@@ -142,9 +145,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
-MEDIA_URL = '/media/'
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -152,9 +164,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS =[
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-]
+_default_cors = "http://localhost:5173,http://127.0.0.1:5173"
+_cors = os.getenv("CORS_ALLOWED_ORIGINS", _default_cors)
+CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors.split(",") if o.strip()]
 
 GROQ_API_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
