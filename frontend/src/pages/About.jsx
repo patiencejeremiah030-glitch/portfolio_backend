@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import api from "../api";
-import { unwrapList, formatDateRange } from "../utils/apiHelpers";
+import { formatApiError, unwrapList, formatDateRange } from "../utils/apiHelpers";
 import PageLoader from "../components/PageLoader";
 import ApiError from "../components/ApiError";
 import PageShell from "../components/PageShell";
@@ -23,24 +23,28 @@ export default function About() {
   const { textPrimary, textSecondary } = useAppTheme();
 
   useEffect(() => {
-    Promise.all([
+    Promise.allSettled([
       api.get("/about/"),
       api.get("/skils/"),
       api.get("/experiences/"),
       api.get("/educations/"),
     ])
-      .then(([profileRes, skillsRes, expRes, eduRes]) => {
-        setProfile(profileRes.data);
-        setSkills(unwrapList(skillsRes.data));
-        setExperience(unwrapList(expRes.data));
-        setEducation(unwrapList(eduRes.data));
-      })
-      .catch((err) => {
-        const msg =
-          err.response?.data?.detail ||
-          err.message ||
-          "Could not load about page data.";
-        setError(msg);
+      .then(([about, skillsRes, expRes, eduRes]) => {
+        if (about.status === "fulfilled") {
+          setProfile(about.value.data);
+        } else {
+          setError(formatApiError(about.reason));
+          return;
+        }
+        if (skillsRes.status === "fulfilled") {
+          setSkills(unwrapList(skillsRes.value.data));
+        }
+        if (expRes.status === "fulfilled") {
+          setExperience(unwrapList(expRes.value.data));
+        }
+        if (eduRes.status === "fulfilled") {
+          setEducation(unwrapList(eduRes.value.data));
+        }
       })
       .finally(() => setLoading(false));
   }, []);

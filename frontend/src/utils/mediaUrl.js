@@ -1,10 +1,8 @@
-const serverBase = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api").replace(
-  /\/api\/?$/,
-  ""
-);
+import { getMediaServerBase } from "../config/apiBase";
 
 export function mediaUrl(path) {
   if (!path) return null;
   if (path.startsWith("http")) return path;
+  const serverBase = getMediaServerBase();
   return `${serverBase}${path.startsWith("/") ? path : `/${path}`}`;
 }

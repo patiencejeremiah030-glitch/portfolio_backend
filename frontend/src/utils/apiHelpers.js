@@ -1,3 +1,21 @@
+/** Turn axios / network failures into a short user-facing message. */
+export function formatApiError(err) {
+  if (!err) return "Unknown error";
+  const detail = err.response?.data?.detail;
+  if (detail) return typeof detail === "string" ? detail : JSON.stringify(detail);
+  if (err.code === "ERR_NETWORK") {
+    return "Cannot reach the API (network or CORS). Check VITE_API_URL and CORS_ALLOWED_ORIGINS on Render.";
+  }
+  const status = err.response?.status;
+  const url = err.config?.baseURL
+    ? `${err.config.baseURL}${err.config.url || ""}`
+    : err.config?.url;
+  if (status === 404) {
+    return `API not found (${url || "unknown URL"}). Set VITE_API_URL to your Render API, e.g. https://portfolio-api.onrender.com/api`;
+  }
+  return err.message || "Request failed";
+}
+
 /** DRF list endpoints return an array; paginated APIs return { results: [...] }. */
 export function unwrapList(data) {
   if (Array.isArray(data)) return data;

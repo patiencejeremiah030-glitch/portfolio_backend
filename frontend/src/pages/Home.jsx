@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import api from "../api";
-import { unwrapList } from "../utils/apiHelpers";
+import { formatApiError, unwrapList } from "../utils/apiHelpers";
 import PageLoader from "../components/PageLoader";
 import ApiError from "../components/ApiError";
 import ContentCard from "../components/ContentCard";
@@ -47,23 +47,36 @@ export default function Home() {
   const { heroGradient, isDark, textSecondary, glassBorder } = useAppTheme();
 
   useEffect(() => {
-    Promise.all([
+    const requests = [
       api.get("/about/"),
       api.get("/projects/"),
       api.get("/skils/"),
       api.get("/experiences/"),
       api.get("/educations/"),
-    ])
-      .then(([profileRes, projectsRes, skillsRes, expRes, eduRes]) => {
-        setProfile(profileRes.data);
-        setProjects(unwrapList(projectsRes.data));
-        setSkills(unwrapList(skillsRes.data));
-        const expList = unwrapList(expRes.data);
-        const eduList = unwrapList(eduRes.data);
-        setExperiences(expList);
-        setTimeline(buildTimelineItems(expList, eduList));
+    ];
+
+    Promise.allSettled(requests)
+      .then(([about, projectsRes, skillsRes, expRes, eduRes]) => {
+        if (about.status === "fulfilled") {
+          setProfile(about.value.data);
+        } else {
+          setError(formatApiError(about.reason));
+          return;
+        }
+        if (projectsRes.status === "fulfilled") {
+          setProjects(unwrapList(projectsRes.value.data));
+        }
+        if (skillsRes.status === "fulfilled") {
+          setSkills(unwrapList(skillsRes.value.data));
+        }
+        if (expRes.status === "fulfilled") {
+          const expList = unwrapList(expRes.value.data);
+          setExperiences(expList);
+          const eduList =
+            eduRes.status === "fulfilled" ? unwrapList(eduRes.value.data) : [];
+          setTimeline(buildTimelineItems(expList, eduList));
+        }
       })
-      .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
 
