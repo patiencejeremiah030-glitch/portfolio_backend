@@ -212,7 +212,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 _default_cors = "http://localhost:5173,http://127.0.0.1:5173"
 _cors = os.getenv("CORS_ALLOWED_ORIGINS", _default_cors)
-CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors.split(",") if o.strip()]
+
+
+def _parse_cors_origins(value):
+    origins = []
+    for part in value.split(","):
+        origin = part.strip().rstrip("/")
+        if origin:
+            origins.append(origin)
+    return origins
+
+
+CORS_ALLOWED_ORIGINS = _parse_cors_origins(_cors)
 
 # Required for Django admin over HTTPS in production
 CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)

@@ -159,11 +159,15 @@ Typical setup:
 | **Backend** | [Render](https://render.com) or [Railway](https://railway.app) | Django + PostgreSQL; set env vars; use Gunicorn |
 | **Frontend** | [Vercel](https://vercel.com) or [Netlify](https://netlify.com) | Same repo; **Root Directory:** `frontend` |
 
-**Frontend build env (Vercel):**
+**Frontend build env (Vercel)** — required; Vite bakes this in at **build** time:
 
-```env
-VITE_API_URL=https://your-api-domain.onrender.com/api
-```
+| Name | Value (example) |
+|------|------------------|
+| `VITE_API_URL` | `https://portfolio-api.onrender.com/api` |
+
+In Vercel: **Project → Settings → Environment Variables → Production → Add → Save**, then **Deployments → Redeploy** (a new deploy is required after changing env vars).
+
+**Root Directory** must be `frontend`. The repo includes `frontend/vercel.json` for client-side routing (`/about`, etc.).
 
 **Backend:** Add your live frontend URL to `CORS_ALLOWED_ORIGINS` in `config/settings.py` (or load from an environment variable).
 
