@@ -203,7 +203,14 @@ else:
     }
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = BASE_DIR / "media"
+
+# Serve uploaded files from Render (no /media/ in production when DEBUG=False by default)
+SERVE_MEDIA_FILES = os.getenv("SERVE_MEDIA", "").lower() in (
+    "1",
+    "true",
+    "yes",
+) or bool(os.getenv("RENDER"))
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

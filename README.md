@@ -209,7 +209,7 @@ Render Shell may require a paid plan. Use env vars + `ensure_superuser` instead:
 
 If the user already exists, deploy skips creation (safe to run every deploy). To change password, update `DJANGO_SUPERUSER_PASSWORD` and delete the old user in admin, or use a new username.
 
-**Media files** (profile/project images): configure persistent storage or object storage (e.g. S3) for production; local `media/` is not ideal on ephemeral hosts.
+**Media files** (profile/project images): Render serves `/media/` when `RENDER` is set (see `SERVE_MEDIA_FILES` in settings). Uploads live on the server disk — they can be **lost after a redeploy** on the free tier. For permanent storage, use S3 or Cloudinary later. After deploying media fixes, re-upload images in admin once.
 
 ---
 
