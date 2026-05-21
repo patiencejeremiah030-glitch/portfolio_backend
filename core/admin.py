@@ -1,30 +1,27 @@
 from django.contrib import admin
+from django.utils.html import format_html
+
 from .models import SiteProfile
 
-# Register your models here.
+
 @admin.register(SiteProfile)
 class SiteProfileAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "created_at", "email", "location")
+    list_display = ("full_name", "email", "location", "has_profile_image", "updated_at")
     search_fields = ("full_name", "email", "location")
-    readonly_fields = ("created_at", "updated_at")
+    readonly_fields = ("created_at", "updated_at", "avatar_preview")
     fieldsets = (
+        (None, {"fields": ("full_name", "headline", "bio")}),
         (
-            None,
+            "Profile picture",
             {
-                "fields": (
-                    "full_name",
-                    "headline",
-                    "bio",
-                    "avatar_url",
-                    "avatar",
-                    "intro_video_url",
-                ),
+                "fields": ("avatar_url", "avatar", "avatar_preview"),
                 "description": (
-                    "On Render: paste a public image link in Avatar url (recommended). "
-                    "File upload only works until the next redeploy."
+                    "Use Profile picture URL on Render (paste a direct https:// image link). "
+                    "Or upload a file for local dev. Save, then refresh your Vercel site."
                 ),
             },
         ),
+        ("Intro video (optional)", {"fields": ("intro_video_url",)}),
         (
             "Contact & links",
             {
@@ -43,5 +40,24 @@ class SiteProfileAdmin(admin.ModelAdmin):
         ),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
+
+    @admin.display(boolean=True, description="Image set?")
+    def has_profile_image(self, obj):
+        return bool(obj.avatar_url or obj.avatar)
+
+    @admin.display(description="Current picture preview")
+    def avatar_preview(self, obj):
+        from config.serializer_utils import resolve_image_for_api
+
+        url = resolve_image_for_api(obj, "avatar", "avatar_url", None)
+        if not url:
+            if obj.avatar:
+                url = obj.avatar.url
+            else:
+                return "No image yet — add Profile picture URL or upload a file."
+        return format_html(
+            '<img src="{}" alt="avatar preview" style="max-height:200px;border-radius:8px;" />',
+            url,
+        )
 
 

@@ -20,10 +20,18 @@ class SiteProfile(models.Model):
     )
     avatar_url = models.URLField(
         blank=True,
-        help_text="Public image URL (paste a direct https:// link). Best for production on Render.",
+        verbose_name="Profile picture URL",
+        help_text=(
+            "Paste a direct image link (https://...jpg or .png). "
+            "Best on Render — shows on your live portfolio immediately."
+        ),
     )
     avatar = models.ImageField(
-        upload_to="profiles_pictures/", null=True, blank=True
+        upload_to="profiles_pictures/",
+        null=True,
+        blank=True,
+        verbose_name="Profile picture (file upload)",
+        help_text="Upload from your computer. Works locally; on Render prefer Profile picture URL above.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
