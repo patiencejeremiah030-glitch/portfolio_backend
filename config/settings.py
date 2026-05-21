@@ -126,6 +126,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 _sqlite_path = BASE_DIR / "db.sqlite3"
 _database_url = os.getenv("DATABASE_URL")
 _use_postgres = os.getenv("USE_POSTGRES", "").lower() in ("1", "true", "yes")
+_on_render = bool(os.getenv("RENDER") or os.getenv("RENDER_EXTERNAL_HOSTNAME"))
+
+# On Render, always use Postgres when DATABASE_URL is linked (avoids migrate on SQLite during build).
+if _on_render and _database_url:
+    _use_postgres = True
 
 if _use_postgres and _database_url:
     DATABASES = {

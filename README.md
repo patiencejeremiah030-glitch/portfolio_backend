@@ -180,8 +180,22 @@ python manage.py load_initial_portfolio
 Or add it to the Render **Build Command** (after migrate):
 
 ```bash
-python manage.py migrate && python manage.py load_initial_portfolio && python manage.py ensure_superuser && python manage.py collectstatic --noinput
+pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py load_initial_portfolio && python manage.py ensure_superuser && python manage.py collectstatic --noinput
 ```
+
+**Start Command** (runs migrations before each deploy goes live — fixes admin 500 when DB is behind code):
+
+```bash
+bash scripts/render_start.sh
+```
+
+Or inline:
+
+```bash
+python manage.py migrate --noinput && gunicorn config.wsgi:application
+```
+
+**Render env (required):** `USE_POSTGRES=true`, `DATABASE_URL` from your Postgres instance, `DEBUG=False`, `SECRET_KEY`, `ALLOWED_HOSTS=your-service.onrender.com`.
 
 Then open `https://your-api.onrender.com/admin/`, log in, and re-upload profile/project images if needed.
 
@@ -208,6 +222,15 @@ Render Shell may require a paid plan. Use env vars + `ensure_superuser` instead:
 5. Log in at `https://YOUR-SERVICE.onrender.com/admin/` with the username and password from step 2.
 
 If the user already exists, deploy skips creation (safe to run every deploy). To change password, update `DJANGO_SUPERUSER_PASSWORD` and delete the old user in admin, or use a new username.
+
+### Admin shows 500 error
+
+Usually the **database is missing new columns** (`avatar_url`, `image_url`, etc.) while the code expects them.
+
+1. Render → **Logs** → look for `column ... does not exist` or `ProgrammingError`.
+2. Confirm **Environment**: `USE_POSTGRES=true`, `DATABASE_URL` set, `DEBUG=False`.
+3. Set **Start Command** to: `python manage.py migrate --noinput && gunicorn config.wsgi:application`
+4. **Manual Deploy** → wait until **Live**, then open `/admin/` again.
 
 ### Images on Render (no extra services)
 
