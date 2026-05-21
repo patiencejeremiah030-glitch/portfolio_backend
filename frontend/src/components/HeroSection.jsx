@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import RemoteImage from "./RemoteImage";
+import ProfileAvatar from "./ProfileAvatar";
 import GradientText from "./GradientText";
 import SocialLinks from "./SocialLinks";
 import useAppTheme from "../hooks/useAppTheme";
@@ -223,37 +223,11 @@ export default function HeroSection({ profile }) {
               gradientFrom="blue.400"
               gradientTo="brand.500"
             >
-              {profile.avatar ? (
-                <RemoteImage
-                  src={profile.avatar}
-                  alt={profile.full_name}
-                  w={{ base: "340px", lg: "440px" }}
-                  h={{ base: "340px", lg: "440px" }}
-                  maxW="100%"
-                  borderRadius="full"
-                  objectFit="cover"
-                  objectPosition="center"
-                  display="block"
-                  bg={isDark ? "#111827" : "white"}
-                  fallback={
-                    <Box
-                      w={{ base: "340px", lg: "440px" }}
-                      h={{ base: "340px", lg: "440px" }}
-                      maxW="100%"
-                      borderRadius="full"
-                      bg={isDark ? "gray.800" : "gray.100"}
-                    />
-                  }
-                />
-              ) : (
-                <Box
-                  w={{ base: "340px", lg: "440px" }}
-                  h={{ base: "340px", lg: "440px" }}
-                  maxW="100%"
-                  borderRadius="full"
-                  bg={isDark ? "gray.800" : "gray.100"}
-                />
-              )}
+              <ProfileAvatar
+                src={profile.avatar}
+                name={profile.full_name}
+                bg={isDark ? "#111827" : "white"}
+              />
             </Box>
           </Box>
         </MotionBox>

@@ -4,6 +4,8 @@ import { formatApiError } from "./utils/apiHelpers";
 
 const api = axios.create({
   baseURL: getApiBaseUrl(),
+  timeout: 60000,
+  headers: { Accept: "application/json" },
 });
 
 api.interceptors.response.use(

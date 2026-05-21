@@ -24,6 +24,7 @@ import SectionHeading from "../components/SectionHeading";
 import FadeIn from "../components/motion/FadeIn";
 import { testimonials } from "../data/testimonials";
 import useAppTheme from "../hooks/useAppTheme";
+import usePageMeta from "../hooks/usePageMeta";
 
 function yearsFromExperience(experiences) {
   if (!experiences?.length) return "3+";
@@ -47,38 +48,57 @@ export default function Home() {
   const { heroGradient, isDark, textSecondary, glassBorder } = useAppTheme();
 
   useEffect(() => {
-    const requests = [
-      api.get("/about/"),
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const aboutRes = await api.get("/about/");
+        if (cancelled) return;
+        setProfile(aboutRes.data);
+        setError(null);
+      } catch (err) {
+        if (!cancelled) setError(formatApiError(err));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    Promise.allSettled([
       api.get("/projects/"),
       api.get("/skils/"),
       api.get("/experiences/"),
       api.get("/educations/"),
-    ];
+    ]).then(([projectsRes, skillsRes, expRes, eduRes]) => {
+      if (projectsRes.status === "fulfilled") {
+        setProjects(unwrapList(projectsRes.value.data));
+      }
+      if (skillsRes.status === "fulfilled") {
+        setSkills(unwrapList(skillsRes.value.data));
+      }
+      if (expRes.status === "fulfilled") {
+        const expList = unwrapList(expRes.value.data);
+        setExperiences(expList);
+        const eduList =
+          eduRes.status === "fulfilled" ? unwrapList(eduRes.value.data) : [];
+        setTimeline(buildTimelineItems(expList, eduList));
+      }
+    });
+  }, [profile]);
 
-    Promise.allSettled(requests)
-      .then(([about, projectsRes, skillsRes, expRes, eduRes]) => {
-        if (about.status === "fulfilled") {
-          setProfile(about.value.data);
-        } else {
-          setError(formatApiError(about.reason));
-          return;
-        }
-        if (projectsRes.status === "fulfilled") {
-          setProjects(unwrapList(projectsRes.value.data));
-        }
-        if (skillsRes.status === "fulfilled") {
-          setSkills(unwrapList(skillsRes.value.data));
-        }
-        if (expRes.status === "fulfilled") {
-          const expList = unwrapList(expRes.value.data);
-          setExperiences(expList);
-          const eduList =
-            eduRes.status === "fulfilled" ? unwrapList(eduRes.value.data) : [];
-          setTimeline(buildTimelineItems(expList, eduList));
-        }
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  usePageMeta({
+    title: profile ? `${profile.full_name} · Portfolio` : "AUDREY · Portfolio",
+    description: profile?.headline || profile?.bio?.slice(0, 160),
+    image: profile?.avatar,
+  });
 
   const featured = useMemo(
     () => projects.filter((p) => p.featured).slice(0, 3),
