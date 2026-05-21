@@ -1,4 +1,18 @@
+from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.db import models
+
+# ~60s 720p MP4 is often under 30MB; Cloudinary free allows up to 100MB per file.
+MAX_DEMO_VIDEO_BYTES = 60 * 1024 * 1024
+
+
+def validate_demo_video_size(value):
+    if value.size > MAX_DEMO_VIDEO_BYTES:
+        raise ValidationError(
+            "Demo video must be 60 MB or less (about 1 minute at 720p). "
+            "Use a YouTube link instead for longer clips."
+        )
+
 
 # Create your models here.
 class Skil(models.Model):
@@ -42,7 +56,25 @@ class Project(models.Model):
     description = models.TextField()
     tech_stack = models.CharField(max_length=255, )
     live_url = models.URLField(blank=True)
-    image = models.ImageField(upload_to='projects_pictures/', blank=True, null=True)
+    image_url = models.URLField(
+        blank=True,
+        help_text="Direct image link. Used if set — fixes broken uploads on Render.",
+    )
+    image = models.ImageField(upload_to="projects_pictures/", blank=True, null=True)
+    demo_video_url = models.URLField(
+        blank=True,
+        help_text="YouTube or Vimeo link (recommended, free). Short demo, about 60 seconds.",
+    )
+    demo_video = models.FileField(
+        upload_to="project_videos/",
+        blank=True,
+        null=True,
+        validators=[
+            FileExtensionValidator(allowed_extensions=["mp4", "webm", "mov"]),
+            validate_demo_video_size,
+        ],
+        help_text="Optional upload (uses Cloudinary on Render). Max 60 MB, ~1 minute.",
+    )
     featured = models.BooleanField(default=False)
     published = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

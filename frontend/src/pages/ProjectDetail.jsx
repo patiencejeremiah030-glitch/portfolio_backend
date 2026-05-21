@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Box, Button, Heading, Link, Text } from "@chakra-ui/react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import api from "../api";
-import { mediaUrl } from "../utils/mediaUrl";
+import RemoteImage from "../components/RemoteImage";
+import DemoVideo from "../components/DemoVideo";
 import PageLoader from "../components/PageLoader";
 import ApiError from "../components/ApiError";
 import PageShell from "../components/PageShell";
@@ -46,9 +47,8 @@ export default function ProjectDetail() {
       </Button>
       <ContentCard p={{ base: 5, md: 8 }}>
         {project.image && (
-          <Box
-            as="img"
-            src={mediaUrl(project.image)}
+          <RemoteImage
+            src={project.image}
             alt={project.title}
             w="100%"
             maxH="420px"
@@ -63,6 +63,15 @@ export default function ProjectDetail() {
         <Text color="brand.700" fontWeight="medium" mt={2}>
           {project.tech_stack}
         </Text>
+        {(project.demo_video_url || project.demo_video) && (
+          <Box mt={8}>
+            <DemoVideo
+              demoVideoUrl={project.demo_video_url}
+              demoVideo={project.demo_video}
+              title="Project demo"
+            />
+          </Box>
+        )}
         <Text mt={8} lineHeight="tall" color={textSecondary} fontSize="md">
           {project.description}
         </Text>

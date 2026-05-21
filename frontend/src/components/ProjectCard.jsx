@@ -1,6 +1,6 @@
 import { Badge, Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import { mediaUrl } from "../utils/mediaUrl";
+import RemoteImage from "./RemoteImage";
 import ContentCard from "./ContentCard";
 import useAppTheme from "../hooks/useAppTheme";
 
@@ -23,10 +23,9 @@ export default function ProjectCard({ project, featured = false }) {
       <Box position="relative" overflow="hidden" h={imageH}>
         {project.image ? (
           <>
-            <Box
+            <RemoteImage
               className="project-img"
-              as="img"
-              src={mediaUrl(project.image)}
+              src={project.image}
               alt={project.title}
               w="100%"
               h="100%"

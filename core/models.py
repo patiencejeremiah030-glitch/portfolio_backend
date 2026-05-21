@@ -14,7 +14,17 @@ class SiteProfile(models.Model):
     twitter_url = models.URLField(blank=True)
     instagram_url = models.URLField(blank=True)
     resume_url = models.URLField(blank=True)
-    avatar = models.ImageField(upload_to='profiles_pictures/', null=True)
+    intro_video_url = models.URLField(
+        blank=True,
+        help_text="YouTube/Vimeo link to a short intro about you (about 60 seconds).",
+    )
+    avatar_url = models.URLField(
+        blank=True,
+        help_text="Direct image link (Imgur, Cloudinary, etc.). Used if set — fixes Render 404s.",
+    )
+    avatar = models.ImageField(
+        upload_to="profiles_pictures/", null=True, blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

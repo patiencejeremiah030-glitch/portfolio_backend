@@ -29,4 +29,26 @@ class ProjectAdmin(admin.ModelAdmin):
     list_filter = ("featured", "published", )
     prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ("created_at", "updated_at")
+    fieldsets = (
+        (None, {"fields": ("title", "slug", "summary", "description", "tech_stack")}),
+        (
+            "Links & media",
+            {
+                "fields": (
+                    "live_url",
+                    "image_url",
+                    "image",
+                    "demo_video_url",
+                    "demo_video",
+                    "featured",
+                    "published",
+                ),
+                "description": (
+                    "For short demos (~60s): paste a YouTube link in demo video URL (free), "
+                    "or upload MP4/WebM/MOV (max 60 MB) if Cloudinary is configured."
+                ),
+            },
+        ),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
 

@@ -209,7 +209,30 @@ Render Shell may require a paid plan. Use env vars + `ensure_superuser` instead:
 
 If the user already exists, deploy skips creation (safe to run every deploy). To change password, update `DJANGO_SUPERUSER_PASSWORD` and delete the old user in admin, or use a new username.
 
-**Media files** (profile/project images): Render serves `/media/` when `RENDER` is set (see `SERVE_MEDIA_FILES` in settings). Uploads live on the server disk — they can be **lost after a redeploy** on the free tier. For permanent storage, use S3 or Cloudinary later. After deploying media fixes, re-upload images in admin once.
+**Images not showing on Vercel?** The API URL can look correct while the file is missing on Render.
+
+**Quick fix (no upload):** In admin, set **Avatar URL** / **Image URL** to a direct link (`https://res.cloudinary.com/...` or any public image URL). Save → refresh the site.
+
+**Permanent fix:** Use **Cloudinary** (free) and re-upload files after setting `CLOUDINARY_URL`:
+
+**Media files (images):** On Render’s free tier, files saved to the server disk often **404 after a redeploy** even when the API shows a correct `/media/...` URL. Use **Cloudinary** (free):
+
+1. Sign up at [cloudinary.com](https://cloudinary.com) → Dashboard → copy **CLOUDINARY_URL** (format `cloudinary://key:secret@cloud_name`).
+2. Render → **Environment** → add `CLOUDINARY_URL` (secret).
+3. Push latest code, redeploy, then **re-upload** avatar and project images in Django admin.
+4. `/api/about/` should return `https://res.cloudinary.com/...` URLs; the Vercel site will load them.
+
+Without `CLOUDINARY_URL`, images only work locally or until the next Render redeploy.
+
+### Demo videos (~60 seconds)
+
+| Where | Admin field | Best option |
+|-------|-------------|-------------|
+| About you | **Intro video URL** | YouTube/Vimeo link (free, no Cloudinary storage) |
+| Each project | **Demo video URL** | YouTube/Vimeo link (recommended) |
+| Each project | **Demo video** (file) | MP4/WebM/MOV upload, max 60 MB — uses Cloudinary on Render |
+
+**Cloudinary free plan:** includes video (about **100 MB max per file**, monthly **credits** for storage + bandwidth). Short 60s clips are usually fine; heavy traffic can use credits quickly. **YouTube embeds cost nothing** on Cloudinary — use URLs when you can.
 
 ---
 

@@ -66,24 +66,43 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'chatbot',
+_CLOUDINARY_URL = (os.getenv("CLOUDINARY_URL") or "").strip()
+USE_CLOUDINARY = bool(_CLOUDINARY_URL)
 
-    'corsheaders',
-
-    'core',
-    'backend',
-    'blog',
-    'contact',
-
+_INSTALLED_CORE = [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
 ]
+
+if USE_CLOUDINARY:
+    INSTALLED_APPS = [
+        *_INSTALLED_CORE,
+        "cloudinary_storage",
+        "cloudinary",
+        "django.contrib.staticfiles",
+        "rest_framework",
+        "chatbot",
+        "corsheaders",
+        "core",
+        "backend",
+        "blog",
+        "contact",
+    ]
+else:
+    INSTALLED_APPS = [
+        *_INSTALLED_CORE,
+        "django.contrib.staticfiles",
+        "rest_framework",
+        "chatbot",
+        "corsheaders",
+        "core",
+        "backend",
+        "blog",
+        "contact",
+    ]
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -183,24 +202,27 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-if DEBUG:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-        },
-    }
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        },
-    }
+_default_storage = (
+    "cloudinary_storage.storage.MediaCloudinaryStorage"
+    if USE_CLOUDINARY
+    else "django.core.files.storage.FileSystemStorage"
+)
+
+_staticfiles_backend = (
+    "django.contrib.staticfiles.storage.StaticFilesStorage"
+    if DEBUG
+    else "whitenoise.storage.CompressedStaticFilesStorage"
+)
+
+STORAGES = {
+    "default": {"BACKEND": _default_storage},
+    "staticfiles": {"BACKEND": _staticfiles_backend},
+}
+
+if USE_CLOUDINARY:
+    import cloudinary
+
+    cloudinary.config(secure=True)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

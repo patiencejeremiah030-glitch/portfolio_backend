@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import { mediaUrl } from "../utils/mediaUrl";
+import RemoteImage from "./RemoteImage";
 import GradientText from "./GradientText";
 import SocialLinks from "./SocialLinks";
 import useAppTheme from "../hooks/useAppTheme";
@@ -224,9 +224,8 @@ export default function HeroSection({ profile }) {
               gradientTo="brand.500"
             >
               {profile.avatar ? (
-                <Box
-                  as="img"
-                  src={mediaUrl(profile.avatar)}
+                <RemoteImage
+                  src={profile.avatar}
                   alt={profile.full_name}
                   w={{ base: "340px", lg: "440px" }}
                   h={{ base: "340px", lg: "440px" }}
@@ -236,6 +235,15 @@ export default function HeroSection({ profile }) {
                   objectPosition="center"
                   display="block"
                   bg={isDark ? "#111827" : "white"}
+                  fallback={
+                    <Box
+                      w={{ base: "340px", lg: "440px" }}
+                      h={{ base: "340px", lg: "440px" }}
+                      maxW="100%"
+                      borderRadius="full"
+                      bg={isDark ? "gray.800" : "gray.100"}
+                    />
+                  }
                 />
               ) : (
                 <Box

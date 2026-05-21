@@ -12,6 +12,7 @@ import ExperienceCard from "../components/ExperienceCard";
 import SectionHeading from "../components/SectionHeading";
 import useAppTheme from "../hooks/useAppTheme";
 import FadeIn from "../components/motion/FadeIn";
+import DemoVideo from "../components/DemoVideo";
 
 export default function About() {
   const [profile, setProfile] = useState(null);
@@ -87,6 +88,17 @@ export default function About() {
             </Box>
           </ContentCard>
         </FadeIn>
+
+        {profile.intro_video_url && (
+          <FadeIn>
+            <ContentCard p={{ base: 5, md: 8 }}>
+              <DemoVideo
+                demoVideoUrl={profile.intro_video_url}
+                title="Intro video"
+              />
+            </ContentCard>
+          </FadeIn>
+        )}
 
         <Box>
           <SectionHeading

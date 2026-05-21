@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from config.serializer_utils import absolute_media_url
+from config.serializer_utils import absolute_media_url, resolve_image_for_api
 
 from .models import Skil, Experience, Education, Project
 
@@ -27,6 +27,10 @@ class ProjectSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         data = super().to_representation(instance)
         request = self.context.get("request")
-        if request and instance.image:
-            data["image"] = absolute_media_url(request, instance.image)
+        if request:
+            data["image"] = resolve_image_for_api(
+                instance, "image", "image_url", request
+            )
+            if instance.demo_video:
+                data["demo_video"] = absolute_media_url(request, instance.demo_video)
         return data
