@@ -31,6 +31,22 @@ export default function ProjectCard({ project, featured = false }) {
               h="100%"
               objectFit="cover"
               transition="transform 0.5s cubic-bezier(0.22, 1, 0.36, 1)"
+              fallback={
+                <Box
+                  w="100%"
+                  h="100%"
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  bg={isDark ? "gray.800" : "gray.100"}
+                  color={textSecondary}
+                  fontSize="sm"
+                  px={4}
+                  textAlign="center"
+                >
+                  Add Project image URL in admin (https://…)
+                </Box>
+              }
             />
             <Box
               className="project-overlay"
@@ -41,6 +57,7 @@ export default function ProjectCard({ project, featured = false }) {
               gradientTo="transparent"
               opacity={0.35}
               transition="opacity 0.3s"
+              pointerEvents="none"
             />
           </>
         ) : (

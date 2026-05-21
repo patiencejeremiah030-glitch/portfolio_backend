@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
+from config.image_urls import normalize_external_image_url
+
 # ~60s 720p MP4 is often under 30MB.
 MAX_DEMO_VIDEO_BYTES = 60 * 1024 * 1024
 
@@ -59,7 +61,10 @@ class Project(models.Model):
     image_url = models.URLField(
         blank=True,
         verbose_name="Project image URL",
-        help_text="Full https:// link to an image (required for live site on Render).",
+        help_text=(
+            "Direct link: https://i.imgur.com/xxxxx.jpg (right-click image → Copy image address). "
+            "Required on Render — file upload alone will not show on the live site."
+        ),
     )
     image = models.ImageField(upload_to="projects_pictures/", blank=True, null=True)
     demo_video_url = models.URLField(
@@ -82,7 +87,23 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+    def save(self, *args, **kwargs):
+        if self.image_url:
+            self.image_url = normalize_external_image_url(self.image_url)
+        super().save(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+        if self.image_url and not self.image_url.startswith(("http://", "https://")):
+            raise ValidationError(
+                {
+                    "image_url": (
+                        "Must be a full link starting with https:// "
+                        "(e.g. https://i.imgur.com/screenshot.jpg)."
+                    )
+                }
+            )
+
     def __str__(self):
         return self.title
-    
-    
+
