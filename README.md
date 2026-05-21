@@ -180,10 +180,34 @@ python manage.py load_initial_portfolio
 Or add it to the Render **Build Command** (after migrate):
 
 ```bash
-python manage.py migrate && python manage.py load_initial_portfolio && python manage.py collectstatic --noinput
+python manage.py migrate && python manage.py load_initial_portfolio && python manage.py ensure_superuser && python manage.py collectstatic --noinput
 ```
 
 Then open `https://your-api.onrender.com/admin/`, log in, and re-upload profile/project images if needed.
+
+### Django admin without Render Shell (free tier)
+
+Render Shell may require a paid plan. Use env vars + `ensure_superuser` instead:
+
+1. **Push** the latest code (includes `ensure_superuser` command).
+2. **Render** → your API service → **Environment** → add:
+
+   | Key | Value |
+   |-----|--------|
+   | `DJANGO_SUPERUSER_USERNAME` | e.g. `audrey` |
+   | `DJANGO_SUPERUSER_EMAIL` | your email (optional) |
+   | `DJANGO_SUPERUSER_PASSWORD` | strong password (mark as secret) |
+
+3. **Settings** → **Build Command** — include after `migrate`:
+
+   ```bash
+   python manage.py ensure_superuser
+   ```
+
+4. **Save** → wait for automatic redeploy.
+5. Log in at `https://YOUR-SERVICE.onrender.com/admin/` with the username and password from step 2.
+
+If the user already exists, deploy skips creation (safe to run every deploy). To change password, update `DJANGO_SUPERUSER_PASSWORD` and delete the old user in admin, or use a new username.
 
 **Media files** (profile/project images): configure persistent storage or object storage (e.g. S3) for production; local `media/` is not ideal on ephemeral hosts.
 
