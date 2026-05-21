@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # Create your models here.
@@ -36,6 +37,19 @@ class SiteProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+    def clean(self):
+        super().clean()
+        if self.avatar_url and not self.avatar_url.startswith(("http://", "https://")):
+            raise ValidationError(
+                {
+                    "avatar_url": (
+                        "Must be a full link starting with https:// "
+                        "(e.g. https://i.imgur.com/yourphoto.jpg). "
+                        "A filename alone will not work on the live site."
+                    )
+                }
+            )
 
     def __str__(self):
         return self.full_name

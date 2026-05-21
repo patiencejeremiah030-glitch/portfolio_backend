@@ -58,7 +58,8 @@ class Project(models.Model):
     live_url = models.URLField(blank=True)
     image_url = models.URLField(
         blank=True,
-        help_text="Direct image link. Used if set — fixes broken uploads on Render.",
+        verbose_name="Project image URL",
+        help_text="Full https:// link to an image (required for live site on Render).",
     )
     image = models.ImageField(upload_to="projects_pictures/", blank=True, null=True)
     demo_video_url = models.URLField(

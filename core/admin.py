@@ -16,8 +16,8 @@ class SiteProfileAdmin(admin.ModelAdmin):
             {
                 "fields": ("avatar_url", "avatar", "avatar_preview"),
                 "description": (
-                    "Use Profile picture URL on Render (paste a direct https:// image link). "
-                    "Or upload a file for local dev. Save, then refresh your Vercel site."
+                    "IMPORTANT: On Render, use Profile picture URL with a full link like "
+                    "https://i.imgur.com/photo.jpg — NOT a filename. File upload alone often breaks after redeploy."
                 ),
             },
         ),
