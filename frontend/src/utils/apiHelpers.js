@@ -4,7 +4,8 @@ export function formatApiError(err) {
   const detail = err.response?.data?.detail;
   if (detail) return typeof detail === "string" ? detail : JSON.stringify(detail);
   if (err.code === "ERR_NETWORK") {
-    return "Cannot reach the API (network or CORS). Check VITE_API_URL and CORS_ALLOWED_ORIGINS on Render.";
+    const base = err.config?.baseURL || "unknown API URL";
+    return `Cannot reach the API at ${base}. On Vercel set VITE_API_URL to your Render URL (e.g. https://portfolio-api.onrender.com/api) and redeploy. On Render check the service is Live and CORS allows your Vercel domain.`;
   }
   const status = err.response?.status;
   const url = err.config?.baseURL

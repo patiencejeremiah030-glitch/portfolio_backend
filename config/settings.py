@@ -228,6 +228,12 @@ def _parse_cors_origins(value):
 
 CORS_ALLOWED_ORIGINS = _parse_cors_origins(_cors)
 
+# Any *.vercel.app frontend (production + preview) — set CORS_ALLOW_VERCEL=false to disable
+if _on_render and os.getenv("CORS_ALLOW_VERCEL", "true").lower() in ("1", "true", "yes"):
+    CORS_ALLOWED_ORIGIN_REGEXES = [r"^https://[\w-]+\.vercel\.app$"]
+else:
+    CORS_ALLOWED_ORIGIN_REGEXES = []
+
 # Required for Django admin over HTTPS in production
 CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
 if _render_host:

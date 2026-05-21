@@ -169,7 +169,20 @@ In Vercel: **Project → Settings → Environment Variables → Production → A
 
 **Root Directory** must be `frontend`. The repo includes `frontend/vercel.json` for client-side routing (`/about`, etc.).
 
-**Backend:** Add your live frontend URL to `CORS_ALLOWED_ORIGINS` in `config/settings.py` (or load from an environment variable).
+**Backend (Render Environment):**
+
+| Variable | Example |
+|----------|---------|
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173,https://your-app.vercel.app` (no trailing `/`) |
+| `ALLOWED_HOSTS` | `portfolio-api.onrender.com` (your Render hostname only) |
+
+On Render, `*.vercel.app` is allowed automatically for CORS. You still should set `CORS_ALLOWED_ORIGINS` with your exact Vercel URL.
+
+**If the home page says "Cannot reach the API":**
+
+1. Open `https://YOUR-RENDER-HOST.onrender.com/api/about/` in the browser — must return JSON, not 404/500.
+2. Vercel → **Environment** → `VITE_API_URL` = `https://YOUR-RENDER-HOST.onrender.com/api` → **Redeploy** frontend.
+3. Render → service **Live**, env vars saved, **Start Command**: `python manage.py migrate --noinput && gunicorn config.wsgi:application`.
 
 **First deploy on Render (empty database):** After `migrate`, load your starter content:
 
