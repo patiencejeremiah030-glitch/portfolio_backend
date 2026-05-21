@@ -67,7 +67,18 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
 _CLOUDINARY_URL = (os.getenv("CLOUDINARY_URL") or "").strip()
-USE_CLOUDINARY = bool(_CLOUDINARY_URL)
+USE_CLOUDINARY = _CLOUDINARY_URL.startswith("cloudinary://")
+
+# Bad values crash the cloudinary package on import — drop them so deploy still works.
+if _CLOUDINARY_URL and not USE_CLOUDINARY:
+    import warnings
+
+    warnings.warn(
+        "CLOUDINARY_URL must start with 'cloudinary://'. "
+        "Ignoring invalid value; use Avatar URL / Image URL in admin or fix the env var.",
+        stacklevel=1,
+    )
+    os.environ.pop("CLOUDINARY_URL", None)
 
 _INSTALLED_CORE = [
     "django.contrib.admin",

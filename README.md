@@ -217,8 +217,9 @@ If the user already exists, deploy skips creation (safe to run every deploy). To
 
 **Media files (images):** On Render’s free tier, files saved to the server disk often **404 after a redeploy** even when the API shows a correct `/media/...` URL. Use **Cloudinary** (free):
 
-1. Sign up at [cloudinary.com](https://cloudinary.com) → Dashboard → copy **CLOUDINARY_URL** (format `cloudinary://key:secret@cloud_name`).
-2. Render → **Environment** → add `CLOUDINARY_URL` (secret).
+1. Sign up at [cloudinary.com](https://cloudinary.com) → Dashboard → copy **API environment variable** / **CLOUDINARY_URL**.
+2. It must look exactly like: `cloudinary://123456789:yourApiSecret@your-cloud-name` (**not** `https://`).
+3. Render → **Environment** → add `CLOUDINARY_URL` (secret). If the value is wrong, delete it or fix it — a bad value breaks deploy.
 3. Push latest code, redeploy, then **re-upload** avatar and project images in Django admin.
 4. `/api/about/` should return `https://res.cloudinary.com/...` URLs; the Vercel site will load them.
 
