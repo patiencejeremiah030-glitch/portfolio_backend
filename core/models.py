@@ -20,7 +20,7 @@ class SiteProfile(models.Model):
     )
     avatar_url = models.URLField(
         blank=True,
-        help_text="Direct image link (Imgur, Cloudinary, etc.). Used if set — fixes Render 404s.",
+        help_text="Public image URL (paste a direct https:// link). Best for production on Render.",
     )
     avatar = models.ImageField(
         upload_to="profiles_pictures/", null=True, blank=True

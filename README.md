@@ -209,31 +209,22 @@ Render Shell may require a paid plan. Use env vars + `ensure_superuser` instead:
 
 If the user already exists, deploy skips creation (safe to run every deploy). To change password, update `DJANGO_SUPERUSER_PASSWORD` and delete the old user in admin, or use a new username.
 
-**Images not showing on Vercel?** The API URL can look correct while the file is missing on Render.
+### Images on Render (no extra services)
 
-**Quick fix (no upload):** In admin, set **Avatar URL** / **Image URL** to a direct link (`https://res.cloudinary.com/...` or any public image URL). Save → refresh the site.
+File uploads on Render’s free tier often **disappear after redeploy**. Use a **public image link** in admin instead:
 
-**Permanent fix:** Use **Cloudinary** (free) and re-upload files after setting `CLOUDINARY_URL`:
-
-**Media files (images):** On Render’s free tier, files saved to the server disk often **404 after a redeploy** even when the API shows a correct `/media/...` URL. Use **Cloudinary** (free):
-
-1. Sign up at [cloudinary.com](https://cloudinary.com) → Dashboard → copy **API environment variable** / **CLOUDINARY_URL**.
-2. It must look exactly like: `cloudinary://123456789:yourApiSecret@your-cloud-name` (**not** `https://`).
-3. Render → **Environment** → add `CLOUDINARY_URL` (secret). If the value is wrong, delete it or fix it — a bad value breaks deploy.
-3. Push latest code, redeploy, then **re-upload** avatar and project images in Django admin.
-4. `/api/about/` should return `https://res.cloudinary.com/...` URLs; the Vercel site will load them.
-
-Without `CLOUDINARY_URL`, images only work locally or until the next Render redeploy.
+1. Upload your photo anywhere that gives a direct `https://` image URL (e.g. [Imgur](https://imgur.com), [Postimages](https://postimages.org), or your own host).
+2. Django admin → **Site profiles** → **Avatar url** → paste the link → **Save**.
+3. **Projects** → **Image url** → paste → **Save**.
+4. Check `https://your-api.onrender.com/api/about/` — `avatar` should be your `https://` link.
+5. Hard refresh your Vercel site.
 
 ### Demo videos (~60 seconds)
 
 | Where | Admin field | Best option |
 |-------|-------------|-------------|
-| About you | **Intro video URL** | YouTube/Vimeo link (free, no Cloudinary storage) |
+| About you | **Intro video URL** | YouTube/Vimeo link |
 | Each project | **Demo video URL** | YouTube/Vimeo link (recommended) |
-| Each project | **Demo video** (file) | MP4/WebM/MOV upload, max 60 MB — uses Cloudinary on Render |
-
-**Cloudinary free plan:** includes video (about **100 MB max per file**, monthly **credits** for storage + bandwidth). Short 60s clips are usually fine; heavy traffic can use credits quickly. **YouTube embeds cost nothing** on Cloudinary — use URLs when you can.
 
 ---
 

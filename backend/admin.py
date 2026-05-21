@@ -44,8 +44,8 @@ class ProjectAdmin(admin.ModelAdmin):
                     "published",
                 ),
                 "description": (
-                    "For short demos (~60s): paste a YouTube link in demo video URL (free), "
-                    "or upload MP4/WebM/MOV (max 60 MB) if Cloudinary is configured."
+                    "Images: use Image url for a public link. "
+                    "Videos: use Demo video URL (YouTube) — recommended on Render."
                 ),
             },
         ),

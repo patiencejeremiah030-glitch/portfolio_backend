@@ -6,7 +6,7 @@ import {
 } from "../utils/videoEmbed";
 
 /**
- * Shows a project/profile demo: YouTube/Vimeo embed OR uploaded file (Cloudinary).
+ * Shows a project/profile demo: YouTube/Vimeo embed OR direct video file URL.
  * Pass demoVideoUrl and/or demoVideo from the API.
  */
 export default function DemoVideo({

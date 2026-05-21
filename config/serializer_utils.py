@@ -12,7 +12,7 @@ def absolute_media_url(request, file_field):
 
 def resolve_image_for_api(instance, file_attr, url_attr, request):
     """
-    Prefer a pasted image URL (works without Cloudinary), then uploaded file.
+    Prefer a pasted image URL, then uploaded file.
     Returned value is what the API exposes as avatar / image for the frontend.
     """
     external = (getattr(instance, url_attr, None) or "").strip()

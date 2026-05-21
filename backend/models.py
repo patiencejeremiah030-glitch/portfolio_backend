@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
-# ~60s 720p MP4 is often under 30MB; Cloudinary free allows up to 100MB per file.
+# ~60s 720p MP4 is often under 30MB.
 MAX_DEMO_VIDEO_BYTES = 60 * 1024 * 1024
 
 
@@ -73,7 +73,7 @@ class Project(models.Model):
             FileExtensionValidator(allowed_extensions=["mp4", "webm", "mov"]),
             validate_demo_video_size,
         ],
-        help_text="Optional upload (uses Cloudinary on Render). Max 60 MB, ~1 minute.",
+        help_text="Optional MP4/WebM/MOV upload (max 60 MB). YouTube URL is recommended on Render.",
     )
     featured = models.BooleanField(default=False)
     published = models.BooleanField(default=True)

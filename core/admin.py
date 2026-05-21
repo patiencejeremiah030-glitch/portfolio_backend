@@ -20,8 +20,8 @@ class SiteProfileAdmin(admin.ModelAdmin):
                     "intro_video_url",
                 ),
                 "description": (
-                    "For production: set Avatar URL to a direct image link, OR upload Avatar "
-                    "with CLOUDINARY_URL on Render, then re-upload after deploy."
+                    "On Render: paste a public image link in Avatar url (recommended). "
+                    "File upload only works until the next redeploy."
                 ),
             },
         ),

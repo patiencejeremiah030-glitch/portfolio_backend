@@ -34,5 +34,5 @@ export function externalVideoEmbedUrl(url) {
 
 export function isDirectVideoFile(url) {
   if (!url || typeof url !== "string") return false;
-  return /\.(mp4|webm|mov)(\?|$)/i.test(url) || url.includes("res.cloudinary.com");
+  return /\.(mp4|webm|mov)(\?|$)/i.test(url);
 }
