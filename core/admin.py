@@ -16,8 +16,9 @@ class SiteProfileAdmin(admin.ModelAdmin):
             {
                 "fields": ("avatar_url", "avatar", "avatar_preview"),
                 "description": (
-                    "IMPORTANT: On Render, use Profile picture URL with a full link like "
-                    "https://i.imgur.com/photo.jpg — NOT a filename. File upload alone often breaks after redeploy."
+                    "Imgur: open your image → right-click → Copy image address. "
+                    "Must look like https://i.imgur.com/AbC123.jpg (not imgur.com/gallery/...). "
+                    "Save, then check /api/about/ — avatar must be https://i.imgur.com/...."
                 ),
             },
         ),

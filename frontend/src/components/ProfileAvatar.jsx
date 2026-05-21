@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Text } from "@chakra-ui/react";
-import { mediaUrl } from "../utils/mediaUrl";
+import { mediaUrl, proxiedImageUrl } from "../utils/mediaUrl";
 
 function initials(name) {
   if (!name) return "?";
@@ -13,12 +13,29 @@ function initials(name) {
     .toUpperCase();
 }
 
-/** Profile hero image — uses native img for maximum compatibility on Vercel. */
-export default function ProfileAvatar({ src, name, size = { base: "340px", lg: "440px" }, ...boxProps }) {
-  const [failed, setFailed] = useState(false);
-  const resolved = mediaUrl(src);
+/** Profile hero image — normalizes Imgur links and retries via image proxy if blocked. */
+export default function ProfileAvatar({
+  src,
+  name,
+  size = { base: "340px", lg: "440px" },
+  ...boxProps
+}) {
+  const primary = mediaUrl(src);
+  const [imgSrc, setImgSrc] = useState(primary);
+  const [failed, setFailed] = useState(!primary);
 
-  if (!resolved || failed) {
+  const handleError = () => {
+    if (primary && imgSrc === primary) {
+      const proxy = proxiedImageUrl(primary);
+      if (proxy) {
+        setImgSrc(proxy);
+        return;
+      }
+    }
+    setFailed(true);
+  };
+
+  if (!primary || failed) {
     return (
       <Box
         w={size}
@@ -41,7 +58,7 @@ export default function ProfileAvatar({ src, name, size = { base: "340px", lg: "
   return (
     <Box
       as="img"
-      src={resolved}
+      src={imgSrc}
       alt={name || "Profile"}
       w={size}
       h={size}
@@ -52,7 +69,8 @@ export default function ProfileAvatar({ src, name, size = { base: "340px", lg: "
       display="block"
       loading="eager"
       decoding="async"
-      onError={() => setFailed(true)}
+      referrerPolicy="no-referrer"
+      onError={handleError}
       {...boxProps}
     />
   );

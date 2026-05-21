@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, Image } from "@chakra-ui/react";
-import { mediaUrl } from "../utils/mediaUrl";
+import { mediaUrl, proxiedImageUrl } from "../utils/mediaUrl";
 
 /**
  * Renders API image paths or full URLs. Shows a fallback if the file 404s
@@ -12,20 +12,33 @@ export default function RemoteImage({
   fallback,
   ...props
 }) {
-  const [failed, setFailed] = useState(false);
-  const resolved = mediaUrl(src);
+  const primary = mediaUrl(src);
+  const [imgSrc, setImgSrc] = useState(primary);
+  const [failed, setFailed] = useState(!primary);
 
-  if (!resolved || failed) {
+  const handleError = () => {
+    if (primary && imgSrc === primary) {
+      const proxy = proxiedImageUrl(primary);
+      if (proxy) {
+        setImgSrc(proxy);
+        return;
+      }
+    }
+    setFailed(true);
+  };
+
+  if (!primary || failed) {
     return fallback ?? null;
   }
 
   return (
     <Image
-      src={resolved}
+      src={imgSrc}
       alt={alt}
       loading="lazy"
       decoding="async"
-      onError={() => setFailed(true)}
+      referrerPolicy="no-referrer"
+      onError={handleError}
       {...props}
     />
   );

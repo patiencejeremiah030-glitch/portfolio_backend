@@ -23,8 +23,9 @@ class SiteProfile(models.Model):
         blank=True,
         verbose_name="Profile picture URL",
         help_text=(
-            "Paste a direct image link (https://...jpg or .png). "
-            "Best on Render — shows on your live portfolio immediately."
+            "Use a DIRECT image link: https://i.imgur.com/xxxxx.jpg "
+            "(right-click image on Imgur → Copy image address). "
+            "Page links like https://imgur.com/xxxxx are auto-fixed when possible."
         ),
     )
     avatar = models.ImageField(
@@ -37,6 +38,13 @@ class SiteProfile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+
+    def save(self, *args, **kwargs):
+        if self.avatar_url:
+            from config.image_urls import normalize_external_image_url
+
+            self.avatar_url = normalize_external_image_url(self.avatar_url)
+        super().save(*args, **kwargs)
 
     def clean(self):
         super().clean()

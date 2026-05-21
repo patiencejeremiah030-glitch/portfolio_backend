@@ -4,6 +4,8 @@ import os
 
 from django.conf import settings
 
+from config.image_urls import normalize_external_image_url
+
 
 def get_api_public_base(request=None):
     """Public base URL of this API (no /api suffix)."""
@@ -47,7 +49,7 @@ def resolve_image_for_api(instance, file_attr, url_attr, request):
     external = (getattr(instance, url_attr, None) or "").strip()
     if external:
         if external.startswith(("http://", "https://")):
-            return external
+            return normalize_external_image_url(external)
         # Not a valid public URL — ignore so we don't send a bare filename to the frontend
         external = ""
 
