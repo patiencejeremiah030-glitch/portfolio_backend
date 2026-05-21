@@ -1,8 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from config.serializer_utils import resolve_image_for_api
-
 from .models import Skil, Experience, Education, Project
 
 
@@ -40,23 +38,13 @@ class ProjectAdmin(admin.ModelAdmin):
         (
             "Project image",
             {
-                "fields": ("image_url", "image", "image_preview"),
-                "description": (
-                    "Use Project image URL with https://i.imgur.com/....jpg (same as profile). "
-                    "File upload is for local dev only — it will not show on Vercel after Render redeploy."
-                ),
+                "fields": ("image", "image_preview"),
             },
         ),
         (
-            "Links & video",
+            "Publish",
             {
-                "fields": (
-                    "live_url",
-                    "demo_video_url",
-                    "demo_video",
-                    "featured",
-                    "published",
-                ),
+                "fields": ("featured", "published"),
             },
         ),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
@@ -64,16 +52,13 @@ class ProjectAdmin(admin.ModelAdmin):
 
     @admin.display(boolean=True, description="Image set?")
     def has_image(self, obj):
-        return bool(obj.image_url or obj.image)
+        return bool(obj.image)
 
-    @admin.display(description="Preview (live site uses image URL first)")
+    @admin.display(description="Preview")
     def image_preview(self, obj):
-        url = resolve_image_for_api(obj, "image", "image_url", None)
-        if not url and obj.image:
-            url = obj.image.url
-        if not url:
-            return "No image — add Project image URL (https://i.imgur.com/....jpg)."
+        if not obj.image:
+            return "No image — upload a project image below."
         return format_html(
             '<img src="{}" alt="preview" style="max-height:180px;border-radius:8px;" />',
-            url,
+            obj.image.url,
         )
