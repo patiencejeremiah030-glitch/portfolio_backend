@@ -1,6 +1,9 @@
 /** Turn axios / network failures into a short user-facing message. */
 export function formatApiError(err) {
   if (!err) return "Unknown error";
+  if (err.response?.status === 401) {
+    return "Please sign up or log in to access this portfolio.";
+  }
   const data = err.response?.data;
   const detail = data?.detail;
   if (detail) return typeof detail === "string" ? detail : JSON.stringify(detail);

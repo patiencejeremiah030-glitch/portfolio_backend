@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   Badge,
   Button,
@@ -9,27 +8,17 @@ import {
 } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import AuthFormLayout from "../components/AuthFormLayout";
-import PageLoader from "../components/PageLoader";
 import { useAuth } from "../context/AuthContext";
 import useAppTheme from "../hooks/useAppTheme";
 
 export default function Account() {
-  const { user, loading, isAuthenticated, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { textPrimary, textSecondary } = useAppTheme();
 
-  useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate("/login", { replace: true });
-    }
-  }, [loading, isAuthenticated, navigate]);
-
-  if (loading) return <PageLoader label="Loading account…" />;
-  if (!user) return null;
-
   const handleLogout = async () => {
     await logout();
-    navigate("/", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (

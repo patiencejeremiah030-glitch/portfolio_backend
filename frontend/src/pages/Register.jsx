@@ -6,7 +6,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import AuthFormLayout, { AuthField } from "../components/AuthFormLayout";
 import { useAuth } from "../context/AuthContext";
 import useAppTheme from "../hooks/useAppTheme";
@@ -14,6 +14,8 @@ import useAppTheme from "../hooks/useAppTheme";
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
   const { textPrimary, glassBorder } = useAppTheme();
   const [form, setForm] = useState({
     username: "",
@@ -56,7 +58,7 @@ export default function Register() {
   return (
     <AuthFormLayout
       title="Create an account"
-      subtitle="Create a free account to follow along on this portfolio."
+      subtitle="Sign up to access the portfolio. Already have an account? Log in below."
     >
       <Stack as="form" gap={5} onSubmit={handleSubmit}>
         <AuthField label="Username" textPrimary={textPrimary}>

@@ -160,9 +160,11 @@ The app tracks **page views** on each route (`/`, `/about`, `/projects`, etc.). 
 | Purpose | Where |
 |---------|--------|
 | **You (owner)** | Django admin at `/admin/` — only staff/superuser accounts you create |
-| **Visitors** | Sign up on the site (`/register`) — counted in admin under **Users** |
+| **Visitors** | Must **sign up** (`/register`) or **log in** (`/login`) before the portfolio or API loads |
 
-In admin → **Users**, filter by non-staff accounts to see how many people registered. Each user shows **Portfolio logins** and **Last active** (updated on sign-up, login, and account page). Anonymous visitors who do not register are **not** counted.
+The site and all portfolio API routes (`/api/about/`, `/api/projects/`, blog, chat, contact, etc.) require a valid `Authorization: Token …` header. Only `/api/auth/register/`, `/api/auth/login/`, and `/api/health/` are public.
+
+In admin → **Users**, filter by non-staff accounts to see how many people registered. Each user shows **Portfolio logins** and **Last active**. Anonymous visitors are **not** counted.
 
 ---
 

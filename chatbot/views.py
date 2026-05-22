@@ -2,8 +2,6 @@ from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.permissions import AllowAny
-
 from groq import Groq
 
 from .serializers import ChatRequestSerializer
@@ -11,8 +9,6 @@ from .context import build_portfolio_context
 
 
 class ChatView(APIView):
-    authentication_classes = []
-    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = ChatRequestSerializer(data=request.data)

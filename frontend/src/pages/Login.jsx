@@ -6,7 +6,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import AuthFormLayout, { AuthField } from "../components/AuthFormLayout";
 import { useAuth } from "../context/AuthContext";
 import useAppTheme from "../hooks/useAppTheme";
@@ -14,6 +14,8 @@ import useAppTheme from "../hooks/useAppTheme";
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
   const { textPrimary, glassBorder } = useAppTheme();
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
@@ -35,7 +37,7 @@ export default function Login() {
     setError(null);
     try {
       await login(form.username.trim(), form.password);
-      navigate("/account", { replace: true });
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message || "Login failed.");
     } finally {
@@ -46,7 +48,7 @@ export default function Login() {
   return (
     <AuthFormLayout
       title="Welcome back"
-      subtitle="Sign in with your username or email and password."
+      subtitle="Log in to access the portfolio. New here? Create an account below."
     >
       <Stack as="form" gap={5} onSubmit={handleSubmit}>
         <AuthField label="Username or email" textPrimary={textPrimary}>

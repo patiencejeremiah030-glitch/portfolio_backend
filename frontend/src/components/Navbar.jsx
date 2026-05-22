@@ -8,7 +8,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import ColorModeToggle from "./ColorModeToggle";
 import MobileMenu from "./MobileMenu";
 import { useAuth } from "../context/AuthContext";
@@ -52,43 +52,31 @@ function NavLink({ to, label, pathname, isDark, children }) {
   );
 }
 
-function AuthNav({ isDark, pathname, compact = false }) {
-  const { isAuthenticated, user, logout, loading } = useAuth();
+function AuthNav({ isDark, pathname }) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  if (loading) return null;
-
-  if (isAuthenticated) {
-    return (
-      <HStack gap={compact ? 1 : 2}>
-        <NavLink
-          to="/account"
-          label={user?.username || "Account"}
-          pathname={pathname}
-          isDark={isDark}
-        />
-        <Button
-          size={compact ? "xs" : "sm"}
-          variant="outline"
-          colorPalette="brand"
-          borderRadius="full"
-          onClick={() => logout()}
-        >
-          Log out
-        </Button>
-      </HStack>
-    );
-  }
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
-    <HStack gap={compact ? 1 : 2}>
-      <NavLink to="/login" label="Log in" pathname={pathname} isDark={isDark} />
+    <HStack gap={2}>
+      <NavLink
+        to="/account"
+        label={user?.username || "Account"}
+        pathname={pathname}
+        isDark={isDark}
+      />
       <Button
-        asChild
-        size={compact ? "xs" : "sm"}
+        size="sm"
+        variant="outline"
         colorPalette="brand"
         borderRadius="full"
+        onClick={handleLogout}
       >
-        <RouterLink to="/register">Sign up</RouterLink>
+        Log out
       </Button>
     </HStack>
   );

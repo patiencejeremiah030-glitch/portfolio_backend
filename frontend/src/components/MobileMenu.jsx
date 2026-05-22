@@ -10,7 +10,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import ColorModeToggle from "./ColorModeToggle";
 import { useAuth } from "../context/AuthContext";
 import useAppTheme from "../hooks/useAppTheme";
@@ -33,7 +33,8 @@ export default function MobileMenu() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const { isDark } = useAppTheme();
-  const { isAuthenticated, user, logout, loading: authLoading } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setOpen(false);
@@ -264,58 +265,33 @@ export default function MobileMenu() {
           })}
         </VStack>
 
-        {!authLoading && (
-          <Box px={4} pb={2}>
-            <Separator mb={3} borderColor={isDark ? "#334155" : "#e2e8f0"} />
-            {isAuthenticated ? (
-              <VStack align="stretch" gap={2}>
-                <RouterLink
-                  to="/account"
-                  onClick={() => setOpen(false)}
-                  style={{ textDecoration: "none" }}
-                >
-                  <Text fontSize="md" fontWeight="bold" color={isDark ? "#e0e7ff" : "#312e81"} px={2}>
-                    Signed in as {user?.username}
-                  </Text>
-                </RouterLink>
-                <Button
-                  variant="outline"
-                  colorPalette="brand"
-                  w="full"
-                  borderRadius="xl"
-                  onClick={async () => {
-                    await logout();
-                    setOpen(false);
-                  }}
-                >
-                  Log out
-                </Button>
-              </VStack>
-            ) : (
-              <HStack gap={2}>
-                <Button
-                  asChild
-                  flex={1}
-                  variant="outline"
-                  colorPalette="brand"
-                  borderRadius="xl"
-                  onClick={() => setOpen(false)}
-                >
-                  <RouterLink to="/login">Log in</RouterLink>
-                </Button>
-                <Button
-                  asChild
-                  flex={1}
-                  colorPalette="brand"
-                  borderRadius="xl"
-                  onClick={() => setOpen(false)}
-                >
-                  <RouterLink to="/register">Sign up</RouterLink>
-                </Button>
-              </HStack>
-            )}
-          </Box>
-        )}
+        <Box px={4} pb={2}>
+          <Separator mb={3} borderColor={isDark ? "#334155" : "#e2e8f0"} />
+          <VStack align="stretch" gap={2}>
+            <RouterLink
+              to="/account"
+              onClick={() => setOpen(false)}
+              style={{ textDecoration: "none" }}
+            >
+              <Text fontSize="md" fontWeight="bold" color={isDark ? "#e0e7ff" : "#312e81"} px={2}>
+                Signed in as {user?.username}
+              </Text>
+            </RouterLink>
+            <Button
+              variant="outline"
+              colorPalette="brand"
+              w="full"
+              borderRadius="xl"
+              onClick={async () => {
+                await logout();
+                setOpen(false);
+                navigate("/login", { replace: true });
+              }}
+            >
+              Log out
+            </Button>
+          </VStack>
+        </Box>
 
         {/* Footer CTA */}
         <Box

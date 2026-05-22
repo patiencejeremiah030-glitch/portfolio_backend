@@ -23,7 +23,6 @@ class HealthView(APIView):
 
 class SiteProfileView(RetrieveUpdateAPIView):
     serializer_class = SiteProfileSerializer
-    permission_classes = [AllowAny]
 
     def get_object(self):
         profile = seed_initial_portfolio_if_empty()

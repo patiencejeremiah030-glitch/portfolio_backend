@@ -37,6 +37,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error) => {
+    if (error.response?.status === 401) {
+      clearStoredToken();
+      const path = window.location.pathname;
+      if (path !== "/login" && path !== "/register") {
+        window.location.assign("/register");
+      }
+    }
     error.message = formatApiError(error);
     return Promise.reject(error);
   }
