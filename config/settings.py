@@ -217,18 +217,28 @@ _default_cors = "http://localhost:5173,http://127.0.0.1:5173"
 _cors = os.getenv("CORS_ALLOWED_ORIGINS", _default_cors)
 
 
+def _normalize_origin(value):
+    """Django 4+ requires http(s):// in CORS and CSRF origin lists."""
+    origin = (value or "").strip().rstrip("/")
+    if not origin:
+        return ""
+    if "://" not in origin:
+        origin = f"https://{origin}"
+    return origin
+
+
 def _parse_cors_origins(value):
     origins = []
     for part in value.split(","):
-        origin = part.strip().rstrip("/")
-        if origin:
+        origin = _normalize_origin(part)
+        if origin and origin not in origins:
             origins.append(origin)
     return origins
 
 
 CORS_ALLOWED_ORIGINS = _parse_cors_origins(_cors)
 
-_frontend_url = (os.getenv("FRONTEND_URL") or "").strip().rstrip("/")
+_frontend_url = _normalize_origin(os.getenv("FRONTEND_URL") or "")
 if _frontend_url and _frontend_url not in CORS_ALLOWED_ORIGINS:
     CORS_ALLOWED_ORIGINS.append(_frontend_url)
 
