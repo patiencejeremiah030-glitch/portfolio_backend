@@ -1,5 +1,6 @@
 from django.contrib import admin
-from django.utils.html import format_html
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 
 from .models import Skil, Experience, Education, Project
 
@@ -21,41 +22,24 @@ class ExperienceAdmin(admin.ModelAdmin):
 
 @admin.register(Education)
 class EducationAdmin(admin.ModelAdmin):
-    list_display = ("degree", "field_of_study", "start_date", "end_date", "order")
+    list_display = ("school_name", "degree", "field_of_study", "start_date", "end_date", "order")
     search_fields = ("degree", "field_of_study", "school_name")
     ordering = ("order",)
 
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = (
-        "title",
-        "image_url_short",
-        "live_url_short",
-        "featured",
-        "published",
-        "created_at",
-    )
-    search_fields = ("title", "description", "tech_stack", "image_url")
+    list_display = ("title", "slug", "featured", "published", "created_at")
+    search_fields = ("title", "description", "tech_stack")
     list_filter = ("featured", "published")
     prepopulated_fields = {"slug": ("title",)}
-    readonly_fields = (
-        "created_at",
-        "updated_at",
-        "image_url_help",
-        "image_preview",
-    )
+    readonly_fields = ("created_at", "updated_at", "image_preview")
     fieldsets = (
         (None, {"fields": ("title", "slug", "summary", "description", "tech_stack")}),
         (
-            "Project URLs",
+            "Project URLs (use Imgur image link on Render)",
             {
-                "description": (
-                    "Paste links from Imgur, GitHub, or your live demo. "
-                    "On Render, use Image URL (Imgur) — file uploads are not kept after redeploy."
-                ),
                 "fields": (
-                    "image_url_help",
                     "image_url",
                     "image_preview",
                     "live_url",
@@ -64,7 +48,7 @@ class ProjectAdmin(admin.ModelAdmin):
             },
         ),
         (
-            "Optional file upload (local dev only)",
+            "Optional uploads (local dev only — not kept on Render)",
             {
                 "classes": ("collapse",),
                 "fields": ("image", "demo_video"),
@@ -74,66 +58,36 @@ class ProjectAdmin(admin.ModelAdmin):
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
 
-    @admin.display(description="Image URL")
-    def image_url_short(self, obj):
-        if not obj.image_url:
-            return "—"
-        url = obj.image_url
-        return url[:48] + "…" if len(url) > 48 else url
-
-    @admin.display(description="Live URL")
-    def live_url_short(self, obj):
-        if not obj.live_url:
-            return "—"
-        url = obj.live_url
-        return url[:40] + "…" if len(url) > 40 else url
-
-    @admin.display(description="How to add an Imgur image")
-    def image_url_help(self, obj=None):
-        return format_html(
-            "<ol style='margin:0;padding-left:1.2rem;line-height:1.6;'>"
-            "<li>Upload your screenshot to <a href='https://imgur.com/upload' target='_blank' rel='noopener'>imgur.com</a></li>"
-            "<li>Open the image → right-click → <strong>Copy image address</strong></li>"
-            "<li>Paste here, e.g. <code>https://i.imgur.com/abc123.jpg</code></li>"
-            "<li>Or paste the Imgur page link — it is converted automatically on save</li>"
-            "</ol>"
-        )
-
-    @admin.display(description="Preview (from Image URL)")
+    @admin.display(description="Image preview")
     def image_preview(self, obj=None):
-        if obj is None:
-            return "Paste an Image URL above, then save to see a preview."
+        if obj is None or not getattr(obj, "pk", None):
+            return "Save the project first, then add an Image URL and save again."
 
-        url = (obj.image_url or "").strip()
+        url = (getattr(obj, "image_url", None) or "").strip()
         if url:
-            return format_html(
-                '<img src="{}" alt="preview" style="max-height:200px;border-radius:8px;" />'
-                '<p style="margin-top:8px;color:#64748b;font-size:12px;">If the preview is broken, '
-                "use <strong>Copy image address</strong> from Imgur (https://i.imgur.com/….jpg).</p>",
-                url,
+            safe_url = escape(url)
+            return mark_safe(
+                f'<img src="{safe_url}" alt="preview" style="max-height:200px;border-radius:8px;" />'
+                '<p style="margin-top:8px;font-size:12px;color:#64748b;">'
+                "Use https://i.imgur.com/….jpg (Copy image address from Imgur).</p>"
             )
 
-        if obj.image:
-            try:
-                file_url = obj.image.url
-            except (ValueError, OSError):
-                return (
-                    "Uploaded file is missing on disk (common on Render). "
-                    "Use Image URL with an Imgur link instead."
-                )
-            return format_html(
-                '<img src="{}" alt="uploaded file" style="max-height:200px;border-radius:8px;" />'
-                "<p style='margin-top:8px;color:#64748b;font-size:12px;'>"
-                "Uploaded file — on Render, also set <strong>Image URL</strong> above."
-                "</p>",
-                file_url,
-            )
-
-        return "No image yet — paste an Imgur link in Image URL above."
+        return "No Image URL yet. Paste https://i.imgur.com/your-id.jpg in the field above."
 
     def save_model(self, request, obj, form, change):
-        if obj.image_url:
+        if getattr(obj, "image_url", None):
             from config.image_urls import normalize_external_image_url
 
             obj.image_url = normalize_external_image_url(obj.image_url.strip())
+
+        # Broken file reference on Render causes 500 on save — clear missing uploads
+        if obj.image and not obj.image.name:
+            obj.image = None
+        elif obj.image:
+            try:
+                if not obj.image.storage.exists(obj.image.name):
+                    obj.image = None
+            except Exception:
+                obj.image = None
+
         super().save_model(request, obj, form, change)

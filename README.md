@@ -264,14 +264,18 @@ Render Shell may require a paid plan. Use env vars + `ensure_superuser` instead:
 
 If the user already exists, deploy skips creation (safe to run every deploy). To change password, update `DJANGO_SUPERUSER_PASSWORD` and delete the old user in admin, or use a new username.
 
-### Admin shows 500 error
+### Admin shows 500 error (especially Projects → Image URL)
 
-Usually the **database is missing new columns** (`avatar_url`, `image_url`, etc.) while the code expects them.
+Usually the **database is missing the `image_url` column** or an old uploaded image path is broken on Render.
 
-1. Render → **Logs** → look for `column ... does not exist` or `ProgrammingError`.
-2. Confirm **Environment**: `USE_POSTGRES=true`, `DATABASE_URL` set, `DEBUG=False`.
-3. Set **Start Command** to: `python manage.py migrate --noinput && gunicorn config.wsgi:application`
-4. **Manual Deploy** → wait until **Live**, then open `/admin/` again.
+1. Render → **Logs** → look for `column ... image_url does not exist` or `ProgrammingError`.
+2. **Start Command** must be:
+   ```bash
+   python manage.py migrate --noinput && gunicorn config.wsgi:application
+   ```
+3. Push latest code (includes migration `0004_ensure_project_image_url`) → **Manual Deploy** → wait until **Live**.
+4. Open **Projects** → edit project → **Project URLs** → paste **Image URL** only (Imgur `https://i.imgur.com/….jpg`) → **Save**.
+5. Do **not** rely on file upload on Render — use **Image URL** only.
 
 ### Images on Render (no extra services)
 
