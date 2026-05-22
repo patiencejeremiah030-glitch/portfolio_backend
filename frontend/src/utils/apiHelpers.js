@@ -1,8 +1,17 @@
 /** Turn axios / network failures into a short user-facing message. */
 export function formatApiError(err) {
   if (!err) return "Unknown error";
-  const detail = err.response?.data?.detail;
+  const data = err.response?.data;
+  const detail = data?.detail;
   if (detail) return typeof detail === "string" ? detail : JSON.stringify(detail);
+  if (data && typeof data === "object") {
+    const parts = Object.entries(data).flatMap(([key, value]) => {
+      const label = key === "non_field_errors" ? "" : `${key}: `;
+      const msg = Array.isArray(value) ? value.join(" ") : String(value);
+      return msg ? [`${label}${msg}`.trim()] : [];
+    });
+    if (parts.length) return parts.join(" ");
+  }
   if (err.code === "ERR_NETWORK") {
     const base = err.config?.baseURL || "unknown API URL";
     return `Cannot reach the API at ${base}. On Vercel set VITE_API_URL to your Render URL (e.g. https://portfolio-api.onrender.com/api) and redeploy. On Render check the service is Live and CORS allows your Vercel domain.`;

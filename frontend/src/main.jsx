@@ -4,6 +4,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { system } from "./theme/system";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import App from "./App.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
 import "./index.css";
 
@@ -12,7 +13,9 @@ createRoot(document.getElementById("root")).render(
     <ChakraProvider value={system}>
       <ThemeProvider>
         <ErrorBoundary>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </ErrorBoundary>
       </ThemeProvider>
     </ChakraProvider>

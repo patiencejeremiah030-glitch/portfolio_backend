@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Container,
   Flex,
   Heading,
@@ -10,6 +11,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import ColorModeToggle from "./ColorModeToggle";
 import MobileMenu from "./MobileMenu";
+import { useAuth } from "../context/AuthContext";
 import useAppTheme from "../hooks/useAppTheme";
 
 const MotionBox = motion.create(Box);
@@ -47,6 +49,48 @@ function NavLink({ to, label, pathname, isDark, children }) {
     >
       <RouterLink to={to}>{children ?? label}</RouterLink>
     </Link>
+  );
+}
+
+function AuthNav({ isDark, pathname, compact = false }) {
+  const { isAuthenticated, user, logout, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (isAuthenticated) {
+    return (
+      <HStack gap={compact ? 1 : 2}>
+        <NavLink
+          to="/account"
+          label={user?.username || "Account"}
+          pathname={pathname}
+          isDark={isDark}
+        />
+        <Button
+          size={compact ? "xs" : "sm"}
+          variant="outline"
+          colorPalette="brand"
+          borderRadius="full"
+          onClick={() => logout()}
+        >
+          Log out
+        </Button>
+      </HStack>
+    );
+  }
+
+  return (
+    <HStack gap={compact ? 1 : 2}>
+      <NavLink to="/login" label="Log in" pathname={pathname} isDark={isDark} />
+      <Button
+        asChild
+        size={compact ? "xs" : "sm"}
+        colorPalette="brand"
+        borderRadius="full"
+      >
+        <RouterLink to="/register">Sign up</RouterLink>
+      </Button>
+    </HStack>
   );
 }
 
@@ -109,6 +153,7 @@ export default function Navbar() {
             <NavLink to="/chat" pathname={location.pathname} isDark={isDark}>
               AI
             </NavLink>
+            <AuthNav isDark={isDark} pathname={location.pathname} />
             <ColorModeToggle />
           </HStack>
 

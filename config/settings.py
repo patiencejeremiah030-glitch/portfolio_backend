@@ -74,6 +74,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
+    "accounts",
     "chatbot",
     "corsheaders",
     "core",
@@ -257,3 +259,12 @@ if _render_host:
     CSRF_TRUSTED_ORIGINS.append(f"https://{_render_host}")
 
 GROQ_API_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",
+    ],
+}

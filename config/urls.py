@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/', include('blog.urls')),
     path('api/', include('contact.urls')),
     path('api/', include('chatbot.urls')),
-    
+    path('api/', include('accounts.urls')),
 ]
 
 if settings.DEBUG or getattr(settings, "SERVE_MEDIA_FILES", False):

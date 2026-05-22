@@ -118,8 +118,23 @@ Do **not** commit `.env`.
 | Variable | Description |
 |----------|-------------|
 | `VITE_API_URL` | Backend API base URL, e.g. `http://127.0.0.1:8000/api` |
+| `VITE_GA_MEASUREMENT_ID` | Optional GA4 Measurement ID, e.g. `G-XXXXXXXXXX` (all visitors, including anonymous) |
 
 Do **not** commit `frontend/.env`.
+
+### Google Analytics (GA4)
+
+1. Go to [Google Analytics](https://analytics.google.com/) → **Admin** → create a **GA4** property.
+2. **Data streams** → **Web** → add your Vercel URL → copy the **Measurement ID** (`G-…`).
+3. **Vercel** → Project → **Settings** → **Environment Variables** → add `VITE_GA_MEASUREMENT_ID` = `G-…` (Production) → **Redeploy**.
+4. For local testing, add the same line to `frontend/.env` and restart `npm run dev`.
+
+The app tracks **page views** on each route (`/`, `/about`, `/projects`, etc.). Reports appear in GA4 within a few hours (Realtime shows sooner).
+
+| Metric | Where |
+|--------|--------|
+| All visitors (anonymous + logged in) | Google Analytics |
+| Registered users only | Django admin → **Users** |
 
 ---
 
@@ -135,6 +150,19 @@ Do **not** commit `frontend/.env`.
 | `GET` | `/api/blog/` | Blog posts |
 | `POST` | `/api/contact/` | Submit contact form |
 | `POST` | `/api/chat/` | AI chat — body: `{"message": "your question"}` |
+| `POST` | `/api/auth/register/` | Sign up — `username`, `email`, `password`, `password_confirm` |
+| `POST` | `/api/auth/login/` | Log in — `username` (or email), `password` → `{ token, user }` |
+| `POST` | `/api/auth/logout/` | Log out — header: `Authorization: Token <token>` |
+| `GET` | `/api/auth/me/` | Current user — requires token |
+
+### Admin vs portfolio users
+
+| Purpose | Where |
+|---------|--------|
+| **You (owner)** | Django admin at `/admin/` — only staff/superuser accounts you create |
+| **Visitors** | Sign up on the site (`/register`) — counted in admin under **Users** |
+
+In admin → **Users**, filter by non-staff accounts to see how many people registered. Each user shows **Portfolio logins** and **Last active** (updated on sign-up, login, and account page). Anonymous visitors who do not register are **not** counted.
 
 ---
 
