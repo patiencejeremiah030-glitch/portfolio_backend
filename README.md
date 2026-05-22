@@ -279,7 +279,7 @@ File uploads on Render’s free tier often **disappear after redeploy**. Use a *
 
 1. Upload your photo anywhere that gives a direct `https://` image URL (e.g. [Imgur](https://imgur.com), [Postimages](https://postimages.org), or your own host).
 2. Django admin → **Site profiles** → **Avatar url** → paste the link → **Save**.
-3. **Projects** → **Image url** → paste → **Save**.
+3. **Projects** → open a project → **Project URLs** → **Image URL** (paste Imgur link) → **Save**. Preview appears below the field.
 4. Check `https://your-api.onrender.com/api/about/` — `avatar` should be your `https://` link.
 5. Hard refresh your Vercel site.
 

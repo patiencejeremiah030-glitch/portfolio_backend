@@ -28,37 +28,92 @@ class EducationAdmin(admin.ModelAdmin):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ("title", "has_image", "featured", "published", "created_at")
-    search_fields = ("title", "description", "tech_stack")
+    list_display = (
+        "title",
+        "image_url_short",
+        "live_url_short",
+        "featured",
+        "published",
+        "created_at",
+    )
+    search_fields = ("title", "description", "tech_stack", "image_url")
     list_filter = ("featured", "published")
     prepopulated_fields = {"slug": ("title",)}
-    readonly_fields = ("created_at", "updated_at", "image_preview")
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+        "image_url_help",
+        "image_preview",
+    )
     fieldsets = (
         (None, {"fields": ("title", "slug", "summary", "description", "tech_stack")}),
         (
-            "Project image",
+            "Project URLs",
             {
-                "fields": ("image", "image_preview"),
+                "description": (
+                    "Paste links from Imgur, GitHub, or your live demo. "
+                    "On Render, use Image URL (Imgur) — file uploads are not kept after redeploy."
+                ),
+                "fields": (
+                    "image_url_help",
+                    "image_url",
+                    "image_preview",
+                    "live_url",
+                    "demo_video_url",
+                ),
             },
         ),
         (
-            "Publish",
+            "Optional file upload (local dev only)",
             {
-                "fields": ("featured", "published"),
+                "classes": ("collapse",),
+                "fields": ("image", "demo_video"),
             },
         ),
+        ("Publish", {"fields": ("featured", "published")}),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
     )
 
-    @admin.display(boolean=True, description="Image set?")
-    def has_image(self, obj):
-        return bool(obj.image)
+    @admin.display(description="Image URL")
+    def image_url_short(self, obj):
+        if not obj.image_url:
+            return "—"
+        url = obj.image_url
+        return url[:48] + "…" if len(url) > 48 else url
 
-    @admin.display(description="Preview")
-    def image_preview(self, obj):
-        if not obj.image:
-            return "No image — upload a project image below."
+    @admin.display(description="Live URL")
+    def live_url_short(self, obj):
+        if not obj.live_url:
+            return "—"
+        url = obj.live_url
+        return url[:40] + "…" if len(url) > 40 else url
+
+    @admin.display(description="How to add an Imgur image")
+    def image_url_help(self, obj):
         return format_html(
-            '<img src="{}" alt="preview" style="max-height:180px;border-radius:8px;" />',
-            obj.image.url,
+            "<ol style='margin:0;padding-left:1.2rem;line-height:1.6;'>"
+            "<li>Upload your screenshot to <a href='https://imgur.com/upload' target='_blank' rel='noopener'>imgur.com</a></li>"
+            "<li>Open the image → right-click → <strong>Copy image address</strong></li>"
+            "<li>Paste here, e.g. <code>https://i.imgur.com/abc123.jpg</code></li>"
+            "<li>Or paste the Imgur page link — it is converted automatically on save</li>"
+            "</ol>"
         )
+
+    @admin.display(description="Preview (from Image URL)")
+    def image_preview(self, obj):
+        url = (obj.image_url or "").strip()
+        if url:
+            return format_html(
+                '<img src="{}" alt="preview" style="max-height:200px;border-radius:8px;" '
+                'onerror="this.alt=\'Could not load — check the URL\';" />',
+                url,
+            )
+        if obj.image:
+            return format_html(
+                '<img src="{}" alt="uploaded file" style="max-height:200px;border-radius:8px;" />'
+                "<p style='margin-top:8px;color:#64748b;font-size:12px;'>"
+                "Uploaded file — on Render, also set <strong>Image URL</strong> above."
+                "</p>",
+                obj.image.url,
+            )
+        return "No image yet — paste an Imgur link in Image URL above."

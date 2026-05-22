@@ -54,10 +54,6 @@ export default function Account() {
         <Badge alignSelf="start" colorPalette="green" variant="subtle" borderRadius="full" px={3}>
           Active session
         </Badge>
-        <Text fontSize="xs" color={textSecondary} lineHeight="tall">
-          This login is for site visitors. Django admin at /admin/ is only for staff accounts
-          you create in the admin panel.
-        </Text>
         <Button colorPalette="brand" size="lg" borderRadius="xl" onClick={handleLogout}>
           Log out
         </Button>

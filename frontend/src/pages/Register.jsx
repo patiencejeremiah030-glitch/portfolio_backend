@@ -56,7 +56,7 @@ export default function Register() {
   return (
     <AuthFormLayout
       title="Create an account"
-      subtitle="Join to save your session on this portfolio. Admin access is separate."
+      subtitle="Create a free account to follow along on this portfolio."
     >
       <Stack as="form" gap={5} onSubmit={handleSubmit}>
         <AuthField label="Username" textPrimary={textPrimary}>
