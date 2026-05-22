@@ -17,10 +17,8 @@ import ApiError from "../components/ApiError";
 import ContentCard from "../components/ContentCard";
 import HeroSection from "../components/HeroSection";
 import SkillsMarquee from "../components/SkillsMarquee";
-import ProjectCard from "../components/ProjectCard";
 import HomeTimeline, { buildTimelineItems } from "../components/HomeTimeline";
 import HomeTestimonials from "../components/HomeTestimonials";
-import SectionHeading from "../components/SectionHeading";
 import FadeIn from "../components/motion/FadeIn";
 import { testimonials } from "../data/testimonials";
 import useAppTheme from "../hooks/useAppTheme";
@@ -100,12 +98,6 @@ export default function Home() {
     image: profile?.avatar,
   });
 
-  const featured = useMemo(
-    () => projects.filter((p) => p.featured).slice(0, 3),
-    [projects]
-  );
-  const showcase = featured.length ? featured : projects.slice(0, 3);
-
   const stats = useMemo(
     () => [
       { label: "Years experience", value: yearsFromExperience(experiences) },
@@ -169,32 +161,6 @@ export default function Home() {
           ))}
         </SimpleGrid>
       </FadeIn>
-
-      {showcase.length > 0 && (
-        <Box as="section" mb={{ base: 12, md: 16 }}>
-          <FadeIn>
-            <SectionHeading
-              eyebrow="Portfolio"
-              title="Selected work"
-              subtitle="Real projects — design, code, and delivery."
-            />
-          </FadeIn>
-          <SimpleGrid columns={{ base: 1, lg: 3 }} gap={6}>
-            {showcase.map((p, i) => (
-              <FadeIn key={p.id} delay={i * 0.08}>
-                <Box gridColumn={i === 0 && showcase.length > 1 ? { lg: "span 2" } : undefined}>
-                  <ProjectCard project={p} featured={i === 0} />
-                </Box>
-              </FadeIn>
-            ))}
-          </SimpleGrid>
-          <HStack justify="center" mt={8}>
-            <Button asChild variant="outline" colorPalette="brand" borderRadius="full" px={8}>
-              <RouterLink to="/projects">View all projects</RouterLink>
-            </Button>
-          </HStack>
-        </Box>
-      )}
 
       <FadeIn>
         <HomeTimeline items={timeline} />
