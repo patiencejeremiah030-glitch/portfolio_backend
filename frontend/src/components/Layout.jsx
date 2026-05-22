@@ -16,6 +16,8 @@ export default function Layout() {
       bg={pageBg}
       color={isDark ? "gray.100" : "gray.900"}
       transition="background 0.3s ease, color 0.3s ease"
+      overflowX="hidden"
+      maxW="100%"
     >
       <Box
         position="fixed"
@@ -41,9 +43,17 @@ export default function Layout() {
             : "radial-gradient(ellipse 80% 50% at 10% 0%, rgba(99,102,241,0.05), transparent), radial-gradient(ellipse 50% 40% at 95% 70%, rgba(148,163,184,0.08), transparent)"
         }
       />
-      <Box position="relative" zIndex={1} display="flex" flexDirection="column" flex="1">
+      <Box
+        position="relative"
+        zIndex={1}
+        display="flex"
+        flexDirection="column"
+        flex="1"
+        minW={0}
+        maxW="100%"
+      >
         <Navbar />
-        <Box as="main" flex="1" py={{ base: 6, md: 10 }}>
+        <Box as="main" flex="1" py={{ base: 6, md: 10 }} minW={0} maxW="100%">
           <PageTransition />
         </Box>
         <Footer />

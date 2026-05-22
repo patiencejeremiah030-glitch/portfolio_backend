@@ -19,13 +19,20 @@ const MotionBox = motion.create(Box);
 export default function HeroSection({ profile }) {
   const { isDark, textSecondary, glassBorder, glassBg } = useAppTheme();
   return (
-    <Box position="relative" mb={{ base: 12, md: 16 }} pt={{ base: 4, md: 8 }}>
+    <Box
+      position="relative"
+      mb={{ base: 12, md: 16 }}
+      pt={{ base: 4, md: 8 }}
+      overflow="hidden"
+      maxW="100%"
+    >
       <Box
         position="absolute"
         top="-20%"
         left="50%"
         transform="translateX(-50%)"
-        w="min(900px, 120vw)"
+        w="min(900px, 100%)"
+        maxW="100vw"
         h="500px"
         pointerEvents="none"
         bg={
@@ -88,6 +95,9 @@ export default function HeroSection({ profile }) {
               variant="subtle"
               fontSize="xs"
               fontWeight="semibold"
+              maxW="100%"
+              whiteSpace="normal"
+              textAlign="center"
             >
               <Box
                 as="span"
@@ -125,6 +135,8 @@ export default function HeroSection({ profile }) {
               letterSpacing="-0.03em"
               fontFamily="heading"
               mt={2}
+              wordBreak="break-word"
+              overflowWrap="anywhere"
             >
               <GradientText>{profile.full_name}</GradientText>
             </Text>

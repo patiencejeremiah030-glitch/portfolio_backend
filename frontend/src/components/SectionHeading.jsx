@@ -31,6 +31,8 @@ export default function SectionHeading({
         fontFamily="heading"
         fontWeight="bold"
         position="relative"
+        wordBreak="break-word"
+        overflowWrap="anywhere"
         _after={{
           content: '""',
           display: "block",

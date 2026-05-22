@@ -118,21 +118,21 @@ export default function Home() {
   if (loading) return <PageLoader label="Loading portfolio…" />;
   if (error) {
     return (
-      <Container maxW="container.xl" px={{ base: 4, md: 8 }}>
+      <Container maxW="container.xl" px={{ base: 4, md: 8 }} overflow="hidden">
         <ApiError message={error} />
       </Container>
     );
   }
   if (!profile) {
     return (
-      <Container maxW="container.xl" px={{ base: 4, md: 8 }}>
+      <Container maxW="container.xl" px={{ base: 4, md: 8 }} overflow="hidden">
         <ApiError message="No profile found. Add a Site Profile in Django admin." />
       </Container>
     );
   }
 
   return (
-    <Container maxW="container.xl" px={{ base: 4, md: 8 }}>
+    <Container maxW="container.xl" px={{ base: 4, md: 8 }} overflow="hidden">
       <HeroSection profile={profile} />
       <SkillsMarquee skills={skills} />
 
@@ -207,7 +207,7 @@ export default function Home() {
         <Box
           textAlign="center"
           py={{ base: 12, md: 16 }}
-          px={8}
+          px={{ base: 4, sm: 6, md: 8 }}
           borderRadius="3xl"
           position="relative"
           overflow="hidden"

@@ -78,7 +78,13 @@ export default function Navbar() {
     >
       <Container maxW="container.xl" py={4} px={{ base: 4, md: 8 }}>
         <Flex justify="space-between" align="center" gap={4}>
-          <Heading size="md" letterSpacing="-0.03em" flexShrink={0}>
+          <Heading
+            size="md"
+            letterSpacing="-0.03em"
+            flexShrink={1}
+            minW={0}
+            css={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+          >
             <Link
               asChild
               color="brand.500"

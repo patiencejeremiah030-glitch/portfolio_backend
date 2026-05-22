@@ -30,7 +30,7 @@ function isActive(pathname, to) {
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { cardBorder, isDark, pageBg } = useAppTheme();
+  const { cardBorder } = useAppTheme();
 
   useEffect(() => {
     setOpen(false);
@@ -92,10 +92,10 @@ export default function MobileMenu() {
               h="100%"
               p={6}
               gap={6}
-              bg={pageBg}
+              bg="blue.50"
             >
               <Flex justify="space-between" align="center">
-                <Text fontWeight="bold" fontSize="lg" color="brand.500">
+                <Text fontWeight="bold" fontSize="lg" color="brand.700">
                   AUDREY.
                 </Text>
                 <HStack gap={2}>
@@ -123,11 +123,12 @@ export default function MobileMenu() {
                       px={4}
                       borderRadius="xl"
                       fontWeight={active ? "semibold" : "medium"}
-                      color={active ? "brand.500" : isDark ? "gray.200" : "gray.700"}
-                      bg={active ? (isDark ? "whiteAlpha.100" : "brand.50") : "transparent"}
+                      color={active ? "brand.700" : "gray.800"}
+                      bg={active ? "blue.100" : "transparent"}
                       _hover={{
                         textDecoration: "none",
-                        bg: isDark ? "whiteAlpha.100" : "gray.100",
+                        color: "brand.700",
+                        bg: "blue.100",
                       }}
                     >
                       <RouterLink to={to}>{label}</RouterLink>

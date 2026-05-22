@@ -72,7 +72,14 @@ export default function ProjectDetail() {
             />
           </Box>
         )}
-        <Text mt={8} lineHeight="tall" color={textSecondary} fontSize="md">
+        <Text
+          mt={8}
+          lineHeight="tall"
+          color={textSecondary}
+          fontSize="md"
+          wordBreak="break-word"
+          overflowWrap="anywhere"
+        >
           {project.description}
         </Text>
         {project.live_url && (
@@ -83,6 +90,9 @@ export default function ProjectDetail() {
             fontWeight="semibold"
             mt={6}
             display="inline-block"
+            wordBreak="break-all"
+            overflowWrap="anywhere"
+            maxW="100%"
           >
             Open live demo →
           </Link>
