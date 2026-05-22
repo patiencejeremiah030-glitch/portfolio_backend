@@ -5,8 +5,6 @@ import {
   Flex,
   HStack,
   IconButton,
-  Link,
-  Text,
   VStack,
 } from "@chakra-ui/react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
@@ -30,7 +28,13 @@ function isActive(pathname, to) {
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { cardBorder } = useAppTheme();
+  const { cardBorder, isDark } = useAppTheme();
+
+  const panelBg = isDark ? "#0f172a" : "#eff6ff";
+  const linkColor = isDark ? "#f1f5f9" : "#1e293b";
+  const linkActiveColor = isDark ? "#a5b4fc" : "#4338ca";
+  const linkHoverBg = isDark ? "rgba(255,255,255,0.08)" : "#dbeafe";
+  const linkActiveBg = isDark ? "rgba(99,102,241,0.2)" : "#bfdbfe";
 
   useEffect(() => {
     setOpen(false);
@@ -75,6 +79,7 @@ export default function MobileMenu() {
             right={0}
             h="100%"
             w={{ base: "min(320px, 88vw)", sm: "340px" }}
+            bg={panelBg}
             borderLeftWidth="1px"
             borderColor={cardBorder}
             shadow="2xl"
@@ -87,52 +92,45 @@ export default function MobileMenu() {
               },
             }}
           >
-            <Flex
-              direction="column"
-              h="100%"
-              p={6}
-              gap={6}
-              bg="blue.50"
-            >
-              <Flex justify="space-between" align="center">
-                <Text fontWeight="bold" fontSize="lg" color="brand.700">
-                  AUDREY.
-                </Text>
-                <HStack gap={2}>
-                  <ColorModeToggle />
-                  <IconButton
-                    aria-label="Close menu"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setOpen(false)}
-                  >
-                    ✕
-                  </IconButton>
-                </HStack>
+            <Flex direction="column" h="100%" p={6} gap={6}>
+              <Flex justify="flex-end" align="center" gap={2}>
+                <ColorModeToggle />
+                <IconButton
+                  aria-label="Close menu"
+                  variant="ghost"
+                  size="sm"
+                  color={linkColor}
+                  onClick={() => setOpen(false)}
+                >
+                  ✕
+                </IconButton>
               </Flex>
 
-              <VStack align="stretch" gap={1} flex={1}>
+              <VStack align="stretch" gap={1} flex={1} overflowY="auto">
                 {navLinks.map(({ to, label }) => {
                   const active = isActive(location.pathname, to);
                   return (
-                    <Link
+                    <Box
                       key={to}
-                      asChild
+                      as={RouterLink}
+                      to={to}
                       display="block"
                       py={3}
                       px={4}
                       borderRadius="xl"
                       fontWeight={active ? "semibold" : "medium"}
-                      color={active ? "brand.700" : "gray.800"}
-                      bg={active ? "blue.100" : "transparent"}
+                      fontSize="md"
+                      color={active ? linkActiveColor : linkColor}
+                      bg={active ? linkActiveBg : "transparent"}
+                      textDecoration="none"
                       _hover={{
                         textDecoration: "none",
-                        color: "brand.700",
-                        bg: "blue.100",
+                        color: linkActiveColor,
+                        bg: linkHoverBg,
                       }}
                     >
-                      <RouterLink to={to}>{label}</RouterLink>
-                    </Link>
+                      {label}
+                    </Box>
                   );
                 })}
               </VStack>
