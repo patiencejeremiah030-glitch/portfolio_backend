@@ -89,12 +89,15 @@ class Project(models.Model):
 
     def save(self, *args, **kwargs):
         if self.image_url:
-            self.image_url = normalize_external_image_url(self.image_url)
+            self.image_url = normalize_external_image_url(self.image_url.strip())
         super().save(*args, **kwargs)
 
     def clean(self):
         super().clean()
-        if self.image_url and not self.image_url.startswith(("http://", "https://")):
+        url = (self.image_url or "").strip()
+        if not url:
+            return
+        if not url.startswith(("http://", "https://")):
             raise ValidationError(
                 {
                     "image_url": (
@@ -103,6 +106,7 @@ class Project(models.Model):
                     )
                 }
             )
+        self.image_url = normalize_external_image_url(url)
 
     def __str__(self):
         return self.title

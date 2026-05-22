@@ -89,7 +89,7 @@ class ProjectAdmin(admin.ModelAdmin):
         return url[:40] + "…" if len(url) > 40 else url
 
     @admin.display(description="How to add an Imgur image")
-    def image_url_help(self, obj):
+    def image_url_help(self, obj=None):
         return format_html(
             "<ol style='margin:0;padding-left:1.2rem;line-height:1.6;'>"
             "<li>Upload your screenshot to <a href='https://imgur.com/upload' target='_blank' rel='noopener'>imgur.com</a></li>"
@@ -100,20 +100,40 @@ class ProjectAdmin(admin.ModelAdmin):
         )
 
     @admin.display(description="Preview (from Image URL)")
-    def image_preview(self, obj):
+    def image_preview(self, obj=None):
+        if obj is None:
+            return "Paste an Image URL above, then save to see a preview."
+
         url = (obj.image_url or "").strip()
         if url:
             return format_html(
-                '<img src="{}" alt="preview" style="max-height:200px;border-radius:8px;" '
-                'onerror="this.alt=\'Could not load — check the URL\';" />',
+                '<img src="{}" alt="preview" style="max-height:200px;border-radius:8px;" />'
+                '<p style="margin-top:8px;color:#64748b;font-size:12px;">If the preview is broken, '
+                "use <strong>Copy image address</strong> from Imgur (https://i.imgur.com/….jpg).</p>",
                 url,
             )
+
         if obj.image:
+            try:
+                file_url = obj.image.url
+            except (ValueError, OSError):
+                return (
+                    "Uploaded file is missing on disk (common on Render). "
+                    "Use Image URL with an Imgur link instead."
+                )
             return format_html(
                 '<img src="{}" alt="uploaded file" style="max-height:200px;border-radius:8px;" />'
                 "<p style='margin-top:8px;color:#64748b;font-size:12px;'>"
                 "Uploaded file — on Render, also set <strong>Image URL</strong> above."
                 "</p>",
-                obj.image.url,
+                file_url,
             )
+
         return "No image yet — paste an Imgur link in Image URL above."
+
+    def save_model(self, request, obj, form, change):
+        if obj.image_url:
+            from config.image_urls import normalize_external_image_url
+
+            obj.image_url = normalize_external_image_url(obj.image_url.strip())
+        super().save_model(request, obj, form, change)
